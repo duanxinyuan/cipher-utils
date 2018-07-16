@@ -13,15 +13,16 @@ public class ExecutorUtil {
 
     private volatile static ExecutorUtil instance;
 
-    //定长线程池
+    //缓存线程池
     private ExecutorService executorService;
 
     // 定时线程池
     private ScheduledExecutorService scheduledExecutorService;
 
     private ExecutorUtil() {
-        executorService = getExecutorService("ExecutorUtil", 5, 20);
+        executorService = getExecutorService("ExecutorUtil", 5, 20, 1024);
         scheduledExecutorService = getScheduledExecutorService("ExecutorUtil", 5);
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "ExecutorUtil-shutdownhook"));
     }
 
     public static ExecutorUtil getInstance() {
@@ -35,14 +36,26 @@ public class ExecutorUtil {
         return instance;
     }
 
+    /**
+     * 生成定时线程池
+     * @param name 名称
+     * @param corePollSize 核心线程数
+     */
     public static ScheduledExecutorService getScheduledExecutorService(String name, int corePollSize) {
         BasicThreadFactory basicThreadFactory = new BasicThreadFactory.Builder().namingPattern(name + "-schedule-pool-%d").daemon(true).build();
-        return new ScheduledThreadPoolExecutor(corePollSize, basicThreadFactory);
+        return new ScheduledThreadPoolExecutor(corePollSize, basicThreadFactory, new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
-    public static ExecutorService getExecutorService(String name, int corePollSize, int maxmumPoolSize) {
+    /**
+     * 生成缓存线程池
+     * @param name 名称
+     * @param corePollSize 核心线程数
+     * @param maxmumPoolSize 最大线程数
+     * @param queueSize 队列长度
+     */
+    public static ExecutorService getExecutorService(String name, int corePollSize, int maxmumPoolSize, int queueSize) {
         BasicThreadFactory basicThreadFactory = new BasicThreadFactory.Builder().namingPattern(name + "-pool-%d").daemon(true).build();
-        return new ThreadPoolExecutor(corePollSize, maxmumPoolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(1024), basicThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+        return new ThreadPoolExecutor(corePollSize, maxmumPoolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueSize), basicThreadFactory, new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     public void schedule(long delay, TimeUnit unit, Runnable command) {
@@ -54,8 +67,8 @@ public class ExecutorUtil {
     }
 
     public void shutdown() {
-        scheduledExecutorService.shutdown();
         executorService.shutdown();
+        scheduledExecutorService.shutdown();
     }
 }
 
