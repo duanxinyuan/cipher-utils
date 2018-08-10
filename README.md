@@ -1,5 +1,15 @@
 # 基础工具类
 
+
+## Maven依赖：
+```xml
+<dependency>
+    <groupId>com.github.duanxinyuan</groupId>
+    <artifactId>library-common-util</artifactId>
+    <version>1.3.0</version>
+</dependency>
+```
+
 * 时间工具类：DateUtils
 * 加密解密工具类：EncryptUtil
 * 线程池工具类：ExecutorUtil
