@@ -1,7 +1,9 @@
 package com.dxy.common.util;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import com.dxy.library.json.GsonUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -13,16 +15,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 反射工具类
-* @author duanxinyuan
+ * @author duanxinyuan
  * 2015-01-16 20:43
  */
-public interface ReflectUtil {
+@Slf4j
+public class ReflectUtil {
 
     /**
      * 实例化一个对象, 执行它的set方法, 为其属性赋值, propertyNames为该对象的属性名称数组,
@@ -31,7 +35,7 @@ public interface ReflectUtil {
      * @param propertyNames 属性名称数组
      * @param propertyValues 属性值数组
      */
-    static Object newClass(String className, String[] propertyNames, Object[] propertyValues) throws Exception {
+    public static Object newClass(String className, String[] propertyNames, Object[] propertyValues) throws Exception {
         Class<?> clazz = Class.forName(className);
         Object obj = clazz.newInstance();
         for (int i = 0; i < propertyNames.length; i++) {
@@ -47,7 +51,7 @@ public interface ReflectUtil {
      * @param className 类名
      * @param map 数据
      */
-    static Object newClass(String className, Map<String, Object> map) throws Exception {
+    public static Object newClass(String className, Map<String, Object> map) throws Exception {
         Class<?> clazz = Class.forName(className);
         Object obj = clazz.newInstance();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -61,7 +65,7 @@ public interface ReflectUtil {
     /**
      * 将某个数组里面的对象转换为另一个对象的list返回
      */
-    static <T> List<T> transform(Object[] ts, Class<T> cls) {
+    public static <T> List<T> transform(Object[] ts, Class<T> cls) {
         if (ts == null || ts.length <= 0) {
             return null;
         }
@@ -75,7 +79,7 @@ public interface ReflectUtil {
     /**
      * 将某个List里面的对象转换为另一个对象的list返回
      */
-    static <T> List<T> transform(List list, Class<T> cls) {
+    public static <T> List<T> transform(List list, Class<T> cls) {
         if (list == null || list.size() <= 0) {
             return null;
         }
@@ -91,13 +95,13 @@ public interface ReflectUtil {
      * @param obj 要转换的对象
      * @param cls 转换成为的类型
      */
-    static <T> T transform(Object obj, Class<T> cls) {
+    public static <T> T transform(Object obj, Class<T> cls) {
         //创建一个对象
         T distObj = null;
         try {
             distObj = cls.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("transform newInstance error, obj: {}, cls: {}", obj.toString(), cls.getName(), e);
         }
 
         //获取目标class的属性
@@ -115,7 +119,7 @@ public interface ReflectUtil {
                     field.set(distObj, value);
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                log.error("setField error, obj: {}, field: {}", obj.toString(), name, e);
             }
         }
         return distObj;
@@ -124,7 +128,7 @@ public interface ReflectUtil {
     /**
      * 获取元素值
      */
-    static Object getFieldValue(Object obj, String name) {
+    public static Object getFieldValue(Object obj, String name) {
         Field sourceField;
         try {
             if (obj == null) {
@@ -136,7 +140,7 @@ public interface ReflectUtil {
             }
             return sourceField.get(obj);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("getField error, obj: {}, field: {}", obj.toString(), name, e);
         }
         return null;
     }
@@ -147,7 +151,7 @@ public interface ReflectUtil {
      * @param name 对象对应的属性名称
      * @param value 设置对应的值
      */
-    static void setFieldValue(Object obj, String name, Object value) {
+    public static void setFieldValue(Object obj, String name, Object value) {
         Field field = getField(obj.getClass(), name);
         if (null != field) {
             try {
@@ -167,7 +171,7 @@ public interface ReflectUtil {
                 }
                 field.set(obj, value);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                log.error("setFieldValue error, obj: {}, field: {}", obj.toString(), name, e);
             }
         }
     }
@@ -175,7 +179,7 @@ public interface ReflectUtil {
     /**
      * 获取元素值
      */
-    static Field getField(Class cls, String name) {
+    private static Field getField(Class cls, String name) {
         if (cls == null) {
             return null;
         }
@@ -192,12 +196,12 @@ public interface ReflectUtil {
      * 获取类的属性数组
      * @param className 类名
      */
-    static Field[] getFields(String className) {
+    public static Field[] getFields(String className) {
         try {
             Class<?> clazz = Class.forName(className);
             return clazz.getDeclaredFields();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.error("getFields error, className: {}", className, e);
             return null;
         }
     }
@@ -207,7 +211,7 @@ public interface ReflectUtil {
      * @param cls 类名
      * @param result 数组值
      */
-    static void setFields(Class cls, List<Field> result) {
+    public static void setFields(Class cls, List<Field> result) {
         if (cls == null) {
             return;
         }
@@ -219,26 +223,26 @@ public interface ReflectUtil {
     /**
      * 合并 dto
      */
-    static <T> T combineDto(T sourceBean, T targetBean) {
-        Class sourceBeanClass = sourceBean.getClass();
-        Class targetBeanClass = targetBean.getClass();
+    public static <T> T combine(T source, T target) {
+        Class sourceClass = source.getClass();
+        Class targetClass = target.getClass();
 
-        Field[] sourceFields = sourceBeanClass.getDeclaredFields();
-        Field[] targetFields = targetBeanClass.getDeclaredFields();
+        Field[] sourceFields = sourceClass.getDeclaredFields();
+        Field[] targetFields = targetClass.getDeclaredFields();
         for (int i = 0; i < sourceFields.length; i++) {
             Field sourceField = sourceFields[i];
             Field targetField = targetFields[i];
             sourceField.setAccessible(true);
             targetField.setAccessible(true);
             try {
-                if (!(sourceField.get(sourceBean) == null) && !"serialVersionUID".equals(sourceField.getName())) {
-                    targetField.set(targetBean, sourceField.get(sourceBean));
+                if (sourceField.get(source) != null && !"serialVersionUID".equals(sourceField.getName())) {
+                    targetField.set(target, sourceField.get(source));
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
+                log.error("combine error, sourceField: {}, targetField: {}", sourceField, targetField, e);
             }
         }
-        return targetBean;
+        return target;
     }
 
 
@@ -246,12 +250,12 @@ public interface ReflectUtil {
      * 实例化一个对象
      * @param className 类名 通过类似Integer.class.getName(),或者obj.getClass().getName()获取
      */
-    static Object newInstance(String className) {
+    public static Object newInstance(String className) {
         try {
             Class<?> clazz = Class.forName(className);
             return clazz.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
+            log.error("newInstance error, className: {}", className, e);
             return null;
         }
     }
@@ -261,7 +265,7 @@ public interface ReflectUtil {
      * @param className 类名
      * @param values 构造器参数值
      */
-    static Object newInstance(String className, Object... values) {
+    public static Object newInstance(String className, Object... values) {
         try {
             Class<?> clazz = Class.forName(className);
             //获取参数clazz
@@ -273,30 +277,22 @@ public interface ReflectUtil {
             Constructor<?> c = clazz.getConstructor(clazzs);
             return c.newInstance(values);
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            log.error("newInstance error, className: {}, values: {}", className, GsonUtil.to(values), e);
             return null;
         }
     }
 
     /**
      * 转换类型, 该方法通过将obj转为String数据, 再将String数据转为className类型
-     * @param dateFormat 日期格式
      */
-    static Object parseClassName(Object obj, String className, String dateFormat) {
-        if (obj == null || obj.toString().trim().length() == 0) {
+    public static <T> T parseClassName(Object obj, Class<T> c) {
+        if (obj == null) {
             return null;
         }
         try {
-            //日期格式
-            if (dateFormat == null) {
-                dateFormat = "yyyy-MM-dd HH:mm:ss";
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
             //将obj转换为String
             String value;
-            if (obj instanceof Date) {
-                value = sdf.format(obj);
-            } else if (obj instanceof Exception) {
+            if (obj instanceof Exception) {
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);
                 ((Exception) obj).printStackTrace(pw);
@@ -305,31 +301,18 @@ public interface ReflectUtil {
                 value = sw.toString();
                 sw.close();
                 pw.close();
+            } else if (obj instanceof String) {
+                value = (String) obj;
             } else {
                 value = String.valueOf(obj);
             }
             //将String转换为className类型
-            if (Integer.class.getName().equals(className) || "int".equals(className)) {
-                return Integer.parseInt(value);
-            } else if (Double.class.getName().equals(className) || "double".equals(className)) {
-                return Double.parseDouble(value);
-            } else if (Float.class.getName().equals(className) || "float".equals(className)) {
-                return Float.parseFloat(value);
-            } else if (Long.class.getName().equals(className) || "long".equals(className)) {
-                return Long.parseLong(value);
-            } else if (Character.class.getName().equals(className) || "char".equals(className)) {
-                return (char) Integer.parseInt(value);
-            } else if (Date.class.getName().equals(className)) {
-                return sdf.parse(value);
-            } else if (java.sql.Date.class.getName().equals(className)) {
-                return new java.sql.Date(sdf.parse(value).getTime());
-            } else if (java.sql.Timestamp.class.getName().equals(className)) {
-                return new java.sql.Timestamp(sdf.parse(value).getTime());
+            if (c == String.class) {
+                return (T) value;
             } else {
-                return value;
+                return GsonUtil.lenientFrom(value, c);
             }
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
             return null;
         }
     }
@@ -339,13 +322,13 @@ public interface ReflectUtil {
      * @param propertyName 变量名
      * @param propertyValue 变量值
      */
-    static void setValueByProperty(Object obj, String propertyName, Object propertyValue) {
+    public static void setValueByProperty(Object obj, String propertyName, Object propertyValue) {
         try {
             PropertyDescriptor pd = new PropertyDescriptor(propertyName, obj.getClass());
             Method method = pd.getWriteMethod();
             method.invoke(obj, propertyValue);
         } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            log.error("setValueByProperty error, obj: {}. propertyName: {}, propertyValue: {}", GsonUtil.to(obj), propertyName, propertyValue, e);
         }
     }
 
@@ -354,13 +337,13 @@ public interface ReflectUtil {
      * @param propertyName 变量名
      * @param obj 变量值
      */
-    static Object getValueByProperty(Object obj, String propertyName) {
+    public static Object getValueByProperty(Object obj, String propertyName) {
         try {
             PropertyDescriptor pd = new PropertyDescriptor(propertyName, obj.getClass());
             Method method = pd.getReadMethod();
             return method.invoke(obj);
         } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            log.error("getValueByProperty error, obj: {}. propertyName: {}", GsonUtil.to(obj), propertyName, e);
             return null;
         }
     }

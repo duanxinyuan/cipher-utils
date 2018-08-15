@@ -68,7 +68,7 @@ public class IdNumberUtil {
      * </p>
      */
     public static final boolean strongVerifyIdNumber(String idNumber) {
-        if (org.apache.commons.lang.StringUtils.isBlank(idNumber)) {
+        if (StringUtils.isBlank(idNumber)) {
             return false;
         }
         idNumber = idNumber.trim();

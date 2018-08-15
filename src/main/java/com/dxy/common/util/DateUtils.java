@@ -2,8 +2,8 @@ package com.dxy.common.util;
 
 import com.dxy.library.json.GsonUtil;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,7 +74,7 @@ public interface DateUtils {
      * @return String
      */
     static String getParseFormat(String date, String parseFormat) {
-        if (org.apache.commons.lang.StringUtils.isEmpty(date)) {
+        if (StringUtils.isEmpty(date)) {
             return "";
         }
         return DateFormatUtils.format(getParse(date, parseFormat), parseFormat);
@@ -362,7 +362,7 @@ public interface DateUtils {
     static String getWeekDesc(String weeks) {
         String[] week = new String[]{"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
         StringBuilder weekCnStr = new StringBuilder();
-        if (!org.apache.commons.lang.StringUtils.isEmpty(weeks)) {
+        if (!StringUtils.isEmpty(weeks)) {
             String[] weekArr = weeks.split(",");
             int count = 0;
             int prevWeek = 0;

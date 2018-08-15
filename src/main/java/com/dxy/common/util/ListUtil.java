@@ -1,14 +1,14 @@
 package com.dxy.common.util;
 
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
 
 /**
  * List工具类
-* @author duanxinyuan
+ * @author duanxinyuan
  * 2017/4/5 19:08
  */
 public class ListUtil {
@@ -17,8 +17,16 @@ public class ListUtil {
      * 判断ArrayList是否为空
      * @return false-为空
      */
-    public static boolean isNN(List tList) {
-        return null != tList && tList.size() > 0;
+    public static <T> boolean isEmpty(List<T> list) {
+        return null == list || list.size() == 0;
+    }
+
+    /**
+     * 判断ArrayList是否为空
+     * @return false-为空
+     */
+    public static <T> boolean isNotEmpty(List<T> list) {
+        return null != list && list.size() > 0;
     }
 
     /**

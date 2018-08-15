@@ -46,7 +46,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 获取字符串长度（一个中文表示两个字符）
      */
     public static int getWordCount(String s) {
-        if (org.apache.commons.lang.StringUtils.isEmpty(s)) {
+        if (StringUtils.isEmpty(s)) {
             return 0;
         }
         s = s.replaceAll("[^\\x00-\\xff]", "**");
@@ -57,7 +57,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 图片Url是否是网络地址
      */
     public static boolean isHttpUrl(String url) {
-        return !org.apache.commons.lang.StringUtils.isEmpty(url) && (url.startsWith("http://") || url.startsWith("https://"));
+        return !StringUtils.isEmpty(url) && (url.startsWith("http://") || url.startsWith("https://"));
     }
 
 
@@ -130,7 +130,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param <T> List数据的范型
      */
     public static <T> String jointFieldForListByComma(List<T> list, String fieldName) {
-        if (!ListUtil.isNN(list)) {
+        if (!ListUtil.isNotEmpty(list)) {
             return "";
         }
         StringBuilder jointFieldForListByComma = new StringBuilder();
@@ -159,7 +159,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param list id集合
      */
     public static String jointIdsByComma(List<Long> list) {
-        if (!ListUtil.isNN(list)) {
+        if (!ListUtil.isNotEmpty(list)) {
             return "";
         }
         StringBuilder jointFieldForListByComma = new StringBuilder();
