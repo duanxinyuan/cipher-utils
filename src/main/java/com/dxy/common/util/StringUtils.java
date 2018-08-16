@@ -1,10 +1,11 @@
 package com.dxy.common.util;
 
+import com.google.common.collect.Lists;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 字符串工具类
@@ -13,31 +14,24 @@ import java.util.regex.Pattern;
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
-    //匹配数字的正则表达式
-    private static Pattern digit_pattern = Pattern.compile(".*\\d+.*");
-
-    private static Pattern email_pattern = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
-    private static Pattern mobile_pattern = Pattern.compile("^[1][0-9]{10}$");
-
     /**
      * 检测邮箱地址是否合法
-     * @return true合法 false不合法
      */
     public static boolean isEmail(String email) {
-        if (null == email || "".equals(email)) {
-            return false;
-        }
-        Matcher m = email_pattern.matcher(email);
-        return m.matches();
+        return PatternUtils.matches(PatternUtils.PatternEnum.EMAIL, email);
     }
 
 
+    /**
+     * 检测手机号是否合法
+     */
     public static boolean isMobile(String mobile) {
-        Matcher m = mobile_pattern.matcher(mobile);
-        return m.find();
+        return PatternUtils.matches(PatternUtils.PatternEnum.MOBILE, mobile);
     }
 
-
+    /**
+     * 检测是否是身份证号
+     */
     public static boolean isIdNumber(String idNumber) {
         return IdNumberUtil.strongVerifyIdNumber(idNumber);
     }
@@ -60,20 +54,36 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return !StringUtils.isEmpty(url) && (url.startsWith("http://") || url.startsWith("https://"));
     }
 
-
-    // 判断一个字符串是否都为数字
-    public static boolean isDigit(String strNum) {
-        return strNum.matches("[0-9]{1,}");
+    /**
+     * 判断字符串是否存在中文
+     * @return true/false
+     */
+    public static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
     }
 
-    // 判断一个字符串是否含有数字
-    public static boolean hasDigit(String content) {
-        boolean flag = false;
-        Matcher m = digit_pattern.matcher(content);
-        if (m.matches()) {
-            flag = true;
-        }
-        return flag;
+    /**
+     * 判断字符串中是否包含中文
+     * @return boolean
+     */
+    public static boolean isContainChinese(String str) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.CHINESE, str);
+    }
+
+    /**
+     * 判断一个字符串是否都为数字
+     */
+    public static boolean isDigit(String str) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.DIGIT, str);
+    }
+
+    /**
+     * 判断一个字符串是否含有数字
+     */
+    public static boolean hasDigit(String str) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.DIGIT_CONTAINS, str);
     }
 
     /**
@@ -91,9 +101,16 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
+     * 将字符串转成16进制字符串
+     */
+    public static String toHex(String s) {
+        return toHex(s.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
      * 将字节码转成16进制字符串
      */
-    public static String byteToHexString(byte[] bytes) {
+    public static String toHex(byte[] bytes) {
         // 把密文转换成十六进制的字符串形式
         StringBuilder hexString = new StringBuilder();
         // 字节数组转换为 十六进制 数
@@ -110,7 +127,18 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     /**
      * 将16进制转换为二进制
      */
-    public static byte[] parseHexStr2Byte(String hexStr) {
+    public static String parseHexToString(String hexStr) {
+        byte[] bytes = parseHexToBytes(hexStr);
+        if (bytes == null) {
+            return null;
+        }
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 将16进制转换为二进制
+     */
+    public static byte[] parseHexToBytes(String hexStr) {
         if (hexStr.length() < 1) {
             return null;
         }
@@ -129,11 +157,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @param fieldName 字段名
      * @param <T> List数据的范型
      */
-    public static <T> String jointFieldForListByComma(List<T> list, String fieldName) {
+    public static <T> String join(List<T> list, String fieldName, String separator) {
         if (!ListUtil.isNotEmpty(list)) {
             return "";
         }
-        StringBuilder jointFieldForListByComma = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         List<Object> objects = new ArrayList<>();
         for (T t : list) {
             Object fieldValue = ReflectUtil.getFieldValue(t, fieldName);
@@ -146,122 +174,64 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             if (null == o) {
                 continue;
             }
-            jointFieldForListByComma.append(o);
+            stringBuilder.append(o);
             if (i != objects.size() - 1) {
-                jointFieldForListByComma.append(",");
+                stringBuilder.append(separator);
             }
         }
-        return jointFieldForListByComma.toString();
+        return stringBuilder.toString();
     }
 
     /**
      * 以逗号分隔，拼接List中每个id
      * @param list id集合
      */
-    public static String jointIdsByComma(List<Long> list) {
+    public static <T> String join(List<T> list, String separator) {
         if (!ListUtil.isNotEmpty(list)) {
             return "";
         }
-        StringBuilder jointFieldForListByComma = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
-            Long l = list.get(i);
-            if (null == l) {
+            T t = list.get(i);
+            if (null == t) {
                 continue;
             }
-            jointFieldForListByComma.append(l);
+            stringBuilder.append(t);
             if (i != list.size() - 1) {
-                jointFieldForListByComma.append(",");
+                stringBuilder.append(separator);
             }
         }
-        return jointFieldForListByComma.toString();
-    }
-
-    /**
-     * 以逗号分隔，拼接数组中每个字符串
-     * @param strings 字符串数组
-     */
-    public static String jointStringsByComma(String[] strings) {
-        if (strings == null || strings.length == 0) {
-            return "";
-        }
-        StringBuilder jointFieldForListByComma = new StringBuilder();
-        for (int i = 0; i < strings.length; i++) {
-            String s = strings[i];
-            if (isEmpty(s)) {
-                continue;
-            }
-            jointFieldForListByComma.append(s);
-            if (i != strings.length - 1) {
-                jointFieldForListByComma.append(",");
-            }
-        }
-        return jointFieldForListByComma.toString();
-    }
-
-    /**
-     * 以逗号分隔，拼接数组中每个字符串
-     * @param strings 字符串数组
-     */
-    public static String jointStringsByComma(List<String> strings) {
-        if (strings == null || strings.size() == 0) {
-            return "";
-        }
-        StringBuilder jointFieldForListByComma = new StringBuilder();
-        for (int i = 0; i < strings.size(); i++) {
-            String s = strings.get(i);
-            if (isEmpty(s)) {
-                continue;
-            }
-            jointFieldForListByComma.append(s);
-            if (i != strings.size() - 1) {
-                jointFieldForListByComma.append(",");
-            }
-        }
-        return jointFieldForListByComma.toString();
+        return stringBuilder.toString();
     }
 
     /**
      * 以逗号分隔，拼接数组中每个字符串，作为查询条件，需要拼接单引号
      * @param strings 字符串数组
      */
-    public static String jointStringsByCommaForSql(String[] strings) {
-        if (strings == null || strings.length == 0) {
-            return "";
-        }
-        StringBuilder jointFieldForListByComma = new StringBuilder();
-        for (int i = 0; i < strings.length; i++) {
-            String s = strings[i];
-            if (isEmpty(s)) {
-                continue;
-            }
-            jointFieldForListByComma.append("'").append(s).append("'");
-            if (i != strings.length - 1) {
-                jointFieldForListByComma.append(",");
-            }
-        }
-        return jointFieldForListByComma.toString();
+    public static String joinSql(String[] strings) {
+        return joinSql(Lists.newArrayList(strings));
     }
 
     /**
      * 以逗号分隔，拼接数组中每个字符串，作为查询条件，需要拼接单引号
      * @param strings 字符串数组
      */
-    public static String jointStringsByCommaForSql(List<String> strings) {
-        if (strings == null || strings.size() == 0) {
+    public static String joinSql(List<String> strings) {
+        if (ListUtil.isEmpty(strings)) {
             return "";
         }
-        StringBuilder jointFieldForListByComma = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < strings.size(); i++) {
             String s = strings.get(i);
             if (isEmpty(s)) {
                 continue;
             }
-            jointFieldForListByComma.append("'").append(s).append("'");
+            stringBuilder.append("'").append(s).append("'");
             if (i != strings.size() - 1) {
-                jointFieldForListByComma.append(",");
+                stringBuilder.append(",");
             }
         }
-        return jointFieldForListByComma.toString();
+        return stringBuilder.toString();
     }
 
 }

@@ -54,8 +54,23 @@ public class ExecutorUtil {
      * @param queueSize 队列长度
      */
     public static ExecutorService getExecutorService(String name, int corePollSize, int maxmumPoolSize, int queueSize) {
+        return getExecutorService(name, corePollSize, maxmumPoolSize, queueSize, 0);
+    }
+
+    /**
+     * 生成缓存线程池
+     * @param name 名称
+     * @param corePollSize 核心线程数
+     * @param maxmumPoolSize 最大线程数
+     * @param queueSize 队列长度
+     * @param keepAliveSeconds 空闲线程存活时间
+     */
+    public static ExecutorService getExecutorService(String name, int corePollSize, int maxmumPoolSize, int queueSize, int keepAliveSeconds) {
         BasicThreadFactory basicThreadFactory = new BasicThreadFactory.Builder().namingPattern(name + "-pool-%d").daemon(true).build();
-        return new ThreadPoolExecutor(corePollSize, maxmumPoolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueSize), basicThreadFactory, new ThreadPoolExecutor.CallerRunsPolicy());
+        if (queueSize <= 0) {
+            queueSize = corePollSize;
+        }
+        return new ThreadPoolExecutor(corePollSize, maxmumPoolSize, keepAliveSeconds, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(queueSize), basicThreadFactory, new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     public void schedule(long delay, TimeUnit unit, Runnable command) {

@@ -48,7 +48,6 @@ public class XmlUtil {
         if (StringUtils.isEmpty(from)) {
             return null;
         }
-        System.out.println(from);
         return GsonUtil.lenientFrom(from, c);
     }
 

@@ -2,7 +2,6 @@ package com.dxy.common.util;
 
 import com.dxy.library.json.GsonUtil;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.text.ParseException;
@@ -286,7 +285,7 @@ public interface DateUtils {
     }
 
     /**
-     * 获取时间描述
+     * 获取时间描述(用于简化时间)
      */
     static String getTimeDisplay(Date date) {
         Calendar nowCalendar = new GregorianCalendar();
@@ -395,148 +394,5 @@ public interface DateUtils {
         }
         return weekCnStr.toString();
     }
-
-    /**
-     * 获取某段时间内的所有日期
-     * @param days 多少天之前的
-     * @param today 是否包含今天
-     */
-    static List<Date> findDates(int days, boolean today) {
-        List<Date> lDate = new ArrayList<>();
-        Calendar calBegin = Calendar.getInstance();
-        Calendar calEnd = Calendar.getInstance();
-        calBegin.add(Calendar.DAY_OF_MONTH, -days);
-        Date now = getParseFormat(new Date(), "yyyy-MM-dd 00:00:00");
-        while (calEnd.getTime().after(calBegin.getTime())) {
-            lDate.add(calBegin.getTime());
-            calBegin.add(Calendar.DAY_OF_MONTH, 1);
-            if (today && now.before(calBegin.getTime())) {
-                break;
-            }
-        }
-        return lDate;
-    }
-
-    /**
-     * 获取某段时间(年 月 )内的所有日期
-     * @param count 多少天之前的
-     * @param years 是否是年
-     */
-    static List<Date> findMonthsOrYears(int count, boolean years) {
-        List<Date> lDate = new ArrayList<>();
-        Calendar calBegin = Calendar.getInstance();
-        Calendar calEnd = Calendar.getInstance();
-        int beginYear = calBegin.get(Calendar.YEAR);
-        int beginMonth = calBegin.get(Calendar.MONTH);
-        if (!years) {
-            calBegin.clear();
-            calBegin.set(Calendar.YEAR, beginYear);
-            calBegin.set(Calendar.MONTH, beginMonth);
-            int firstDay = calBegin.getActualMinimum(Calendar.DAY_OF_MONTH);
-            //设置日历中月份的最小天数
-            calBegin.set(Calendar.DAY_OF_MONTH, firstDay);
-            calBegin.add(Calendar.MONTH, -count);
-        } else {
-            calBegin.clear();
-            calBegin.set(Calendar.YEAR, beginYear);
-            calBegin.add(Calendar.YEAR, -count);
-        }
-        while (calEnd.getTime().after(calBegin.getTime())) {
-            lDate.add(calBegin.getTime());
-            if (years) {
-                calBegin.add(Calendar.YEAR, 1);
-            } else {
-                calBegin.add(Calendar.MONTH, 1);
-            }
-        }
-        return lDate;
-    }
-
-    /**
-     * 根据给的前几个月 得到每一天date  对象
-     * 给3个月 ， 今天27号  结果为2个完整月 加这个月的27天
-     * @param count 向前计算的月份
-     */
-    static List<Date> findBeforeMulitpleMonthAllDays(int count) {
-        List<Date> lDate = new ArrayList<>();
-        Calendar calBegin = Calendar.getInstance();
-        int firstDay = calBegin.getActualMinimum(Calendar.DAY_OF_MONTH);
-        Calendar firstDayCal = Calendar.getInstance();
-        firstDayCal.set(Calendar.DAY_OF_MONTH, firstDay);
-        firstDayCal.set(Calendar.HOUR_OF_DAY, 0); //设置0点
-        Calendar firstDayCalCopyBegin = (Calendar) firstDayCal.clone(); //克隆日历
-        Calendar firstDayCalCopyEnd = (Calendar) firstDayCal.clone(); //克隆日历
-        while (calBegin.getTime().after(firstDayCal.getTime())) {//得到当前月所过的天
-            lDate.add(firstDayCal.getTime());
-            firstDayCal.add(Calendar.DAY_OF_MONTH, 1);
-        }
-        firstDayCalCopyBegin.add(Calendar.MONTH, -(count - 1));//舍弃掉当前月
-        while (firstDayCalCopyEnd.getTime().after(firstDayCalCopyBegin.getTime())) {//得到之前月所过的天
-            lDate.add(firstDayCalCopyBegin.getTime());
-            firstDayCalCopyBegin.add(Calendar.DAY_OF_MONTH, 1);
-        }
-        return lDate;
-    }
-
-    /***
-     * 根据指定月 来查询该月下的所有date
-     * @param value
-     * @return
-     */
-    static List<Date> findDateByMonth(String value) {
-        if (!value.contains("-")) {
-            return new ArrayList<>();
-        }
-
-        List<Date> list = new ArrayList<>();
-        String[] arr = value.split("-");
-        int year = NumberUtils.toInt(arr[0]);
-        int month = NumberUtils.toInt(arr[1]);
-        Calendar calendar = Calendar.getInstance();
-        Calendar calendarEnd = Calendar.getInstance();
-        calendar.clear();
-        calendar.set(Calendar.YEAR, year);
-        calendarEnd.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month - 1); //月份默认从0 开始
-        calendarEnd.set(Calendar.MONTH, month - 1);
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-        calendarEnd.set(Calendar.DAY_OF_MONTH, calculationDaysOfMonth(year, month));
-        Date nowDate = getParseFormat(new Date(), "yyyy-MM-dd 23:59:59");
-        while (calendarEnd.getTime().after(calendar.getTime())) {//得到当前月所过的天
-            list.add(calendar.getTime());
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
-            if (nowDate.before(calendar.getTime())) {
-                break; //给的日期  不能超过今天
-            }
-        }
-        return list;
-    }
-
-    /***
-     * 根据指定年 来查询该年下的所有month    yyyy-MM
-     * @param value
-     * @return
-     */
-    static List<Date> findMonthByYear(String value) {
-        List<Date> list = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        Calendar calendarEnd = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, NumberUtils.toInt(value));
-        calendarEnd.set(Calendar.YEAR, NumberUtils.toInt(value));
-        int actualMaximum = calendar.getActualMaximum(Calendar.MONTH);
-        int actualMinimum = calendar.getActualMinimum(Calendar.MONTH);
-        calendar.set(Calendar.MONTH, actualMinimum);
-        calendarEnd.set(Calendar.MONTH, actualMaximum);
-        Date nowDate = getParseFormat(new Date(), "yyyy-MM-dd");
-        while (calendarEnd.getTime().after(calendar.getTime())) {//得到当前月所过的天
-            list.add(getParseFormat(calendar.getTime(), "yyyy-MM"));
-            calendar.add(Calendar.MONTH, 1);
-            if (nowDate.before(calendar.getTime())) {
-                break; //给的日期  不能超过今天所在 月
-            }
-        }
-        return list;
-    }
-
 
 }

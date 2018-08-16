@@ -61,7 +61,7 @@ public class IpUtil {
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
             InetAddress ip = null;
             while (netInterfaces.hasMoreElements()) {// 遍历所有的网卡
-                NetworkInterface ni = (NetworkInterface) netInterfaces.nextElement();
+                NetworkInterface ni = netInterfaces.nextElement();
                 if (ni.isLoopback() || ni.isVirtual()) {// 如果是回环和虚拟网络地址的话继续
                     continue;
                 }

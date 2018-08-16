@@ -1,6 +1,8 @@
 package com.dxy.common.util;
 
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -86,10 +88,7 @@ public class IdNumberUtil {
         if (!checkBirthday(idNumber.substring(6, 14))) {
             return false;
         }
-        if (!checkIdNumberVerifyCode(idNumber)) {
-            return false;
-        }
-        return true;
+        return checkIdNumberVerifyCode(idNumber);
     }
 
     /**
@@ -107,10 +106,7 @@ public class IdNumberUtil {
         if (areaCode == HONGKONG_AREACODE || areaCode == MACAO_AREACODE || areaCode == TAIWAN_AREACODE) {
             return true;
         }
-        if (areaCode <= MAX_MAINLAND_AREACODE && areaCode >= MIN_MAINLAND_AREACODE) {
-            return true;
-        }
-        return false;
+        return areaCode <= MAX_MAINLAND_AREACODE && areaCode >= MIN_MAINLAND_AREACODE;
     }
 
     /**
@@ -146,12 +142,8 @@ public class IdNumberUtil {
      * 身份证出生日期嘛检查
      */
     private static boolean checkBirthday(String idNumberBirthdayStr) {
-        Integer year = null;
-        try {
-            year = Integer.valueOf(idNumberBirthdayStr.substring(0, 4));
-        } catch (Exception e) {
-        }
-        if (null == year) {
+        int year = NumberUtils.toInt(idNumberBirthdayStr.substring(0, 4));
+        if (year == 0) {
             return false;
         }
         if (isLeapYear(year)) {
@@ -173,10 +165,6 @@ public class IdNumberUtil {
      */
     private static boolean checkIdNumberVerifyCode(String idNumber) {
         return getVerifyCode(idNumber).equalsIgnoreCase(idNumber.substring(17));
-    }
-
-    public static void main(String[] args) {
-        System.out.println(strongVerifyIdNumber("111111111111111"));
     }
 
 }

@@ -95,7 +95,7 @@ public interface EncryptUtil {
         MessageDigest digest = MessageDigest.getInstance(encryptType);
         digest.update(content.getBytes());
         byte[] messageDigest = digest.digest();
-        return StringUtils.byteToHexString(messageDigest);
+        return StringUtils.toHex(messageDigest);
     }
 
     /**
@@ -109,7 +109,7 @@ public interface EncryptUtil {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(), HmacSHA256);
         mac.init(secretKeySpec);
         byte[] bytes = mac.doFinal(message.getBytes());
-        return StringUtils.byteToHexString(bytes);
+        return StringUtils.toHex(bytes);
     }
 
     /**
@@ -123,7 +123,7 @@ public interface EncryptUtil {
         // 获得密文
         byte[] md = mdInst.digest();
         // 把密文转换成十六进制的字符串形式
-        return StringUtils.byteToHexString(md);
+        return StringUtils.toHex(md);
     }
 
     /**

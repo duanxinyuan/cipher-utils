@@ -14,7 +14,23 @@ import java.util.*;
 public class ListUtil {
 
     /**
-     * 判断ArrayList是否为空
+     * 判断数组是否为空
+     * @return false-为空
+     */
+    public static <T> boolean isEmpty(T[] list) {
+        return null == list || list.length == 0;
+    }
+
+    /**
+     * 判断数组是否为空
+     * @return false-为空
+     */
+    public static <T> boolean isNotEmpty(T[] list) {
+        return null != list && list.length > 0;
+    }
+
+    /**
+     * 判断List是否为空
      * @return false-为空
      */
     public static <T> boolean isEmpty(List<T> list) {
@@ -22,7 +38,7 @@ public class ListUtil {
     }
 
     /**
-     * 判断ArrayList是否为空
+     * 判断List是否为空
      * @return false-为空
      */
     public static <T> boolean isNotEmpty(List<T> list) {
