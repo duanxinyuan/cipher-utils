@@ -1,6 +1,6 @@
 package com.dxy.common.util;
 
-import com.dxy.library.json.GsonUtil;
+import com.dxy.library.json.gson.GsonUtil;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
