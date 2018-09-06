@@ -50,6 +50,15 @@ public class ExecutorUtil {
      * 生成缓存线程池
      * @param name 名称
      * @param corePollSize 核心线程数
+     */
+    public static ExecutorService getExecutorService(String name, int corePollSize) {
+        return getExecutorService(name, corePollSize, corePollSize, 1024, 0);
+    }
+
+    /**
+     * 生成缓存线程池
+     * @param name 名称
+     * @param corePollSize 核心线程数
      * @param maxmumPoolSize 最大线程数
      * @param queueSize 队列长度
      */
