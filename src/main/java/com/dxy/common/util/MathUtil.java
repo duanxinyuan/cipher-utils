@@ -8,7 +8,7 @@ import java.util.Random;
 
 /**
  * 数字工具类
-* @author duanxinyuan
+ * @author duanxinyuan
  * 2016/6/14 14:44
  */
 public interface MathUtil {
@@ -247,6 +247,13 @@ public interface MathUtil {
             throw new IllegalArgumentException("保留小数位数不能小于0");
         }
         return round(new BigDecimal(String.valueOf(v1)).divide(new BigDecimal(String.valueOf(v2)), scale, BigDecimal.ROUND_HALF_UP).doubleValue());
+    }
+
+    /**
+     * 保留两位小数，四舍五入
+     */
+    static double round(String v) {
+        return round(NumberUtils.toDouble(v), 2);
     }
 
     /**
