@@ -21,7 +21,7 @@ public interface ClassUtil {
                 || cls == Double.class || cls == double.class
                 || cls == Boolean.class || cls == boolean.class
                 || cls == Long.class || cls == long.class
-                || cls == CharSequence.class || cls == char.class
+                || cls == Character.class || cls == char.class
                 || cls == Byte.class || cls == byte.class
                 || cls == BigDecimal.class
                 || cls == BigInteger.class
