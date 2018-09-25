@@ -1,6 +1,7 @@
 package com.dxy.common.util;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.math.BigDecimal;
@@ -249,7 +250,7 @@ public interface MathUtil {
      * 保留两位小数，四舍五入
      */
     static double round(String v) {
-        return round(NumberUtils.toDouble(v), 2);
+        return round(v, 2);
     }
 
     /**
@@ -269,11 +270,42 @@ public interface MathUtil {
         if (null == v) {
             return 0;
         }
+        return round(String.valueOf(v), scale);
+    }
+
+    /**
+     * 四舍五入
+     * @param v 需要四舍五入的数字
+     * @param scale 小数点后保留几位
+     * @return 四舍五入后的结果
+     */
+    static double round(String v, int scale) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(v)) {
+            return 0;
+        }
         if (scale < 0) {
             throw new IllegalArgumentException("保留小数位数不能小于0");
         }
-        BigDecimal b = new BigDecimal(String.valueOf(v));
+        BigDecimal b = new BigDecimal(v);
         return b.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    /**
+     * 四舍五入取整
+     */
+    static int roundInt(String v) {
+        if (StringUtils.isEmpty(v)) {
+            return 0;
+        }
+        BigDecimal b = new BigDecimal(v);
+        return b.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+    }
+
+    /**
+     * 四舍五入取整
+     */
+    static int roundInt(Number v) {
+        return roundInt(String.valueOf(v));
     }
 
     /**
