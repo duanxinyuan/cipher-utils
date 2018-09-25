@@ -8,19 +8,17 @@ import java.util.Random;
 
 /**
  * 数字工具类
+ * 提供精确的浮点数运算，包括加减乘除和四舍五入。
  * @author duanxinyuan
  * 2016/6/14 14:44
  */
 public interface MathUtil {
-    /**
-     * 由于Java的简单类型不能够精确的对浮点数进行运算，这个工具类提供精
-     * 确的浮点数运算，包括加减乘除和四舍五入。
-     */
-    //默认除法运算精度
+
+    //除法运算的默认精度
     int DEF_DIV_SCALE = 10;
 
     /**
-     * 判断Integer对象是否不为空和0，用于判断参数和Id
+     * 判断Integer是否不为空和0
      * @return true-不为空和0
      */
     static boolean isNNZ(Integer i) {
@@ -28,7 +26,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Double是否为0，用于判断参数
+     * 判断Double是否为0
      * @return true-不为空和0
      */
     static boolean isNNZ(Double d) {
@@ -36,7 +34,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Long是否为0，用于判断参数和Id
+     * 判断Long是否为0
      * @return true-不为空和0
      */
     static boolean isNNZ(Long l) {
@@ -44,7 +42,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Long是否为0，用于判断参数和Id
+     * 判断Long是否为0
      * @return true-不为空和0
      */
     static boolean isNNZ(BigDecimal b) {
@@ -52,7 +50,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Integer对象是否大于0，用于判断数目
+     * 判断Integer是否大于0
      * @return true-大于0
      */
     static boolean isGTZ(Integer i) {
@@ -60,7 +58,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Double是否大于0，用于判断数目
+     * 判断Double是否大于0
      * @return true-大于0
      */
     static boolean isGTZ(Double d) {
@@ -68,7 +66,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Long是否大于0，用于判断数目
+     * 判断Long是否大于0
      * @return true-大于0
      */
     static boolean isGTZ(Long l) {
@@ -76,7 +74,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Long是否大于0，用于判断数目
+     * 判断Long是否大于0
      * @return true-大于0
      */
     static boolean isGTZ(BigDecimal b) {
@@ -84,7 +82,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Integer对象是否小于0，用于判断数目
+     * 判断Integer是否小于0
      * @return true-大于0
      */
     static boolean isLTZ(Integer i) {
@@ -92,7 +90,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Double是否小于0，用于判断数目
+     * 判断Double是否小于0
      * @return true-大于0
      */
     static boolean isLTZ(Double d) {
@@ -100,7 +98,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Long是否小于0，用于判断数目
+     * 判断Long是否小于0
      * @return true-大于0
      */
     static boolean isLTZ(Long l) {
@@ -108,7 +106,7 @@ public interface MathUtil {
     }
 
     /**
-     * 判断Long是否小于0，用于判断数目
+     * 判断Long是否小于0
      * @return true-大于0
      */
     static boolean isLTZ(BigDecimal b) {
@@ -116,7 +114,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的加法运算。
+     * 加法运算
      * @param v1 被加数
      * @param v2 加数
      * @return 两个参数的和
@@ -128,7 +126,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的加法运算。
+     * 加法运算
      * @param v1 被减数
      * @param v2 减数
      * @return 两个参数的差
@@ -145,7 +143,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的减法运算。
+     * 减法运算
      * @param v1 被减数
      * @param v2 减数
      * @return 两个参数的差
@@ -157,7 +155,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的减法运算。
+     * 减法运算
      * @param v1 被减数
      * @param v2 减数
      * @return 两个参数的差
@@ -174,7 +172,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的乘法运算。
+     * 乘法运算
      * @param v1 被乘数
      * @param v2 乘数
      * @return 两个参数的积
@@ -187,10 +185,10 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的减法运算。
-     * @param v1 被减数
-     * @param v2 减数
-     * @return 两个参数的差
+     * 乘法运算
+     * @param v1 被乘数
+     * @param v2 乘数
+     * @return 两个参数的积
      */
     static double multiply(Number v1, Number... v2) {
         v1 = v1 == null ? 0 : v1;
@@ -204,8 +202,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供（相对）精确的除法运算，当发生除不尽的情况时，精确到
-     * 小数点以后10位，以后的数字四舍五入。
+     * 除法运算
      * @param v1 被除数
      * @param v2 除数
      * @return 两个参数的商
@@ -215,10 +212,10 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的减法运算。
-     * @param v1 被减数
-     * @param v2 减数
-     * @return 两个参数的差
+     * 除法运算
+     * @param v1 被除数
+     * @param v2 除数
+     * @return 两个参数的商
      */
     static double divide(Number v1, Number... v2) {
         v1 = v1 == null ? 0 : v1;
@@ -232,8 +229,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供（相对）精确的除法运算。当发生除不尽的情况时，由scale参数指
-     * 定精度，以后的数字四舍五入。
+     * 除法运算
      * @param v1 被除数
      * @param v2 除数
      * @param scale 表示表示需要精确到小数点以后几位。
@@ -264,7 +260,7 @@ public interface MathUtil {
     }
 
     /**
-     * 提供精确的小数位四舍五入处理。
+     * 四舍五入
      * @param v 需要四舍五入的数字
      * @param scale 小数点后保留几位
      * @return 四舍五入后的结果
