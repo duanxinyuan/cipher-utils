@@ -1,6 +1,8 @@
-package com.dxy.common.util;
+package com.dxy.common.util.config;
 
 
+import com.dxy.common.util.ClassUtil;
+import com.dxy.common.util.StringUtils;
 import com.dxy.library.json.gson.GsonUtil;
 import com.dxy.library.json.jackson.JacksonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -92,6 +94,30 @@ public class ConfigUtil {
             return null;
         }
         return String.valueOf(properties.get(key));
+    }
+
+    /**
+     * 获取配置（以Key为前缀，获取所有符合规则的config）
+     * @param key 配置名称
+     */
+    public static List<Config> getConfigs(String key) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(key)) {
+            return Lists.newArrayList();
+        }
+        List<Config> configs = Lists.newArrayList();
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            String entryKey = entry.getKey();
+            Object entryValue = entry.getValue();
+
+            if (entryKey.equals(key)) {
+                String name = Config.DEFAULT_NAME;
+                configs.add(new Config(entryKey, name, entryValue));
+            } else if (entryKey.startsWith(key + ".")) {
+                String name = entry.getKey().replace(key + ".", "");
+                configs.add(new Config(entryKey, name, entryValue));
+            }
+        }
+        return configs;
     }
 
 }

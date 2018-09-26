@@ -6,7 +6,7 @@
 <dependency>
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>library-common-util</artifactId>
-    <version>1.3.0</version>
+    <version>1.6.0</version>
 </dependency>
 ```
 

@@ -1,4 +1,5 @@
-import com.dxy.common.util.ConfigUtil;
+import com.dxy.common.util.config.ConfigUtil;
+import com.dxy.library.json.gson.GsonUtil;
 import org.junit.Test;
 
 /**
@@ -12,6 +13,8 @@ public class ConfigTest {
         System.out.println(ConfigUtil.getConfig("dxy.name"));
         System.out.println(ConfigUtil.getConfig("dxy.age", Long.class));
         System.out.println(ConfigUtil.getConfig("dxy.info.game", GameInfo.class));
+
+        System.out.println(GsonUtil.to(ConfigUtil.getConfigs("dxy.info.game")));
     }
 
 }
