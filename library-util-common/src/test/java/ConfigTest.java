@@ -1,5 +1,5 @@
 import com.dxy.library.json.gson.GsonUtil;
-import com.dxy.util.common.config.ConfigUtils;
+import com.dxy.library.util.common.config.ConfigUtils;
 import org.junit.Test;
 
 /**
