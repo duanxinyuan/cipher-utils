@@ -3,6 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>library-util-email</module>
+        <module>library-util-ftp</module>
+        <module>library-util-cipher</module>
+        <module>library-util-common</module>
+    </modules>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -11,9 +17,9 @@
     </parent>
 
     <groupId>com.github.duanxinyuan</groupId>
-    <artifactId>library-common-util</artifactId>
-    <version>1.7.0</version>
-    <packaging>jar</packaging>
+    <artifactId>library-utils</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
 
     <distributionManagement>
         <snapshotRepository>
@@ -37,7 +43,7 @@
 
     <name>Common Utils</name>
     <url>https://github.com/duanxinyuan/common-utils</url>
-    <description>基础工具类</description>
+    <description>工具类集合</description>
 
     <scm>
         <connection>scm:git:https://github.com/duanxinyuan/common-utils.git</connection>
@@ -60,58 +66,32 @@
         <maven.test.skip>true</maven.test.skip>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.duanxinyuan</groupId>
+                <artifactId>library-util-common</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.duanxinyuan</groupId>
+                <artifactId>library-util-cipher</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.duanxinyuan</groupId>
+                <artifactId>library-util-email</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.duanxinyuan</groupId>
+                <artifactId>library-util-ftp</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <dependency>
-            <groupId>com.github.duanxinyuan</groupId>
-            <artifactId>library-json-gson</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.duanxinyuan</groupId>
-            <artifactId>library-json-jackson</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>25.0-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-exec</artifactId>
-            <version>1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.58</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
-        </dependency>
-        <!--FTPClient-->
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>3.6</version>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
