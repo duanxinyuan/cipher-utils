@@ -93,7 +93,12 @@ public class ConfigUtils {
         if (StringUtils.isEmpty(key)) {
             return null;
         }
-        return String.valueOf(properties.get(key));
+        Object object = properties.get(key);
+        if (object == null) {
+            return null;
+        } else {
+            return String.valueOf(object);
+        }
     }
 
     /**
