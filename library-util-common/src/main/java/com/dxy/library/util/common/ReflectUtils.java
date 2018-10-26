@@ -129,18 +129,18 @@ public class ReflectUtils {
      * 获取元素值
      */
     public static Object getFieldValue(Object obj, String name) {
-        Field sourceField;
         try {
             if (obj == null) {
                 return null;
             }
-            sourceField = getField(obj.getClass(), name);
-            if (sourceField == null) {
-                return null;
+            Field field = getField(obj.getClass(), name);
+            if (field == null) {
+                return executeGet(obj, name);
+            } else {
+                return field.get(obj);
             }
-            return sourceField.get(obj);
         } catch (IllegalAccessException e) {
-            log.error("getField error, obj: {}, field: {}", obj.toString(), name, e);
+            log.error("getFieldValue error, obj: {}, field: {}", obj.toString(), name, e);
         }
         return null;
     }
@@ -173,6 +173,8 @@ public class ReflectUtils {
             } catch (IllegalAccessException e) {
                 log.error("setFieldValue error, obj: {}, field: {}", obj.toString(), name, e);
             }
+        } else {
+            executeSet(obj, name, value);
         }
     }
 
@@ -211,7 +213,7 @@ public class ReflectUtils {
      * @param cls 类名
      * @param result 数组值
      */
-    public static void setFields(Class cls, List<Field> result) {
+    private static void setFields(Class cls, List<Field> result) {
         if (cls == null) {
             return;
         }
@@ -221,7 +223,7 @@ public class ReflectUtils {
     }
 
     /**
-     * 合并 dto
+     * 合并两个对象
      */
     public static <T> T combine(T source, T target) {
         Class sourceClass = source.getClass();
@@ -328,7 +330,7 @@ public class ReflectUtils {
             Method method = pd.getWriteMethod();
             method.invoke(obj, propertyValue);
         } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            log.error("setValueByProperty error, obj: {}. propertyName: {}, propertyValue: {}", GsonUtil.to(obj), propertyName, propertyValue, e);
+            log.error("execute set error, obj: {}. propertyName: {}, propertyValue: {}", GsonUtil.to(obj), propertyName, propertyValue, e);
         }
     }
 
@@ -343,7 +345,7 @@ public class ReflectUtils {
             Method method = pd.getReadMethod();
             return method.invoke(obj);
         } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            log.error("getValueByProperty error, obj: {}. propertyName: {}", GsonUtil.to(obj), propertyName, e);
+            log.error("execute get error, obj: {}. propertyName: {}", GsonUtil.to(obj), propertyName, e);
             return null;
         }
     }
