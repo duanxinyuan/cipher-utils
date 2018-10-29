@@ -29,14 +29,14 @@ public class FileUtils {
     /**
      * 创建文件
      */
-    public static void createFile(String localPath) {
+    public static File createFile(String localPath) {
         File localFile = new File(localPath);
         if (localFile.isDirectory()) {
             if (!localFile.exists()) {
                 localFile.mkdirs();
             }
         } else {
-            String localPathDir = localPath.substring(0, localPath.lastIndexOf("/"));
+            String localPathDir = localPath.substring(0, localPath.lastIndexOf(File.separator));
             File localPathDirFile = new File(localPathDir);
             if (!localPathDirFile.exists()) {
                 localPathDirFile.mkdirs();
@@ -45,12 +45,17 @@ public class FileUtils {
                 try {
                     localFile.createNewFile();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
+        return new File(localPath);
     }
 
+    /**
+     * 删除文件或者文件夹
+     * @param path 文件路径
+     */
     public static void delete(String path) {
         File file = new File(path);
         if (file.exists() && file.isFile()) {
@@ -59,11 +64,10 @@ public class FileUtils {
             String[] fileNames = file.list();
             if (fileNames != null) {
                 for (String fileName : fileNames) {
-                    delete(path + fileName);
+                    delete(path + File.separator + fileName);
                 }
-            } else {
-                file.delete();
             }
+            file.delete();
         }
     }
 
@@ -110,6 +114,47 @@ public class FileUtils {
                         if (file.exists()) {
                             String name = path.replace(dirPath, "").replace("\\", "/");
                             ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(file, name);
+                            zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
+                            if (file.isDirectory()) {
+                                continue;
+                            }
+                            IOUtils.copy(new FileInputStream(file), zipArchiveOutputStream);
+                            zipArchiveOutputStream.closeArchiveEntry();
+                        }
+                    }
+                    zipArchiveOutputStream.finish();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    /**
+     * 把文件压缩成zip格式
+     * @param files 需要压缩的文件集合
+     * @param zipFilePath 压缩后的zip文件路径 ,如"D:/test/aa.zip";
+     */
+    public static void zip(List<File> files, String zipFilePath) {
+        zip(files.toArray(new File[0]), zipFilePath);
+    }
+
+    /**
+     * 把文件压缩成zip格式
+     * @param files 需要压缩的文件集合
+     * @param zipFilePath 压缩后的zip文件路径 ,如"D:/test/aa.zip";
+     */
+    public static void zip(File[] files, String zipFilePath) {
+        if (files != null && files.length > 0) {
+            if (isZip(zipFilePath)) {
+                try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(new File(zipFilePath))) {
+                    //使用Zip64扩展
+                    zipArchiveOutputStream.setUseZip64(Zip64Mode.AsNeeded);
+
+                    // 将每个文件用ZipArchiveEntry封装，再用ZipArchiveOutputStream写到压缩文件中
+                    for (File file : files) {
+                        if (file.exists()) {
+                            ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(file, file.getName());
                             zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
                             if (file.isDirectory()) {
                                 continue;
@@ -212,6 +257,45 @@ public class FileUtils {
                         if (file.exists()) {
                             String name = path.replace(dirPath, "").replace("\\", "/");
                             TarArchiveEntry tarArchiveEntry = new TarArchiveEntry(file, name);
+                            tarArchiveOutputStream.putArchiveEntry(tarArchiveEntry);
+                            if (file.isDirectory()) {
+                                continue;
+                            }
+                            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                                IOUtils.copy(fileInputStream, tarArchiveOutputStream);
+                                tarArchiveOutputStream.closeArchiveEntry();
+                            }
+                        }
+                    }
+                    tarArchiveOutputStream.finish();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    /**
+     * 把文件压缩成tar格式
+     * @param files 需要压缩的文件集合
+     * @param tarFilePath 压缩后的tar文件路径 ,如"D:/test/aa.tar.gz";
+     */
+    public static void tar(List<File> files, String tarFilePath) {
+        tar(files.toArray(new File[0]), tarFilePath);
+    }
+
+    /**
+     * 把文件压缩成tar格式
+     * @param files 需要压缩的文件集合
+     * @param tarFilePath 压缩后的tar文件路径 ,如"D:/test/aa.tar.gz";
+     */
+    public static void tar(File[] files, String tarFilePath) {
+        if (files != null && files.length > 0) {
+            if (isTar(tarFilePath)) {
+                try (TarArchiveOutputStream tarArchiveOutputStream = new TarArchiveOutputStream(new GzipCompressorOutputStream(new FileOutputStream(tarFilePath)))) {
+                    for (File file : files) {
+                        if (file.exists()) {
+                            TarArchiveEntry tarArchiveEntry = new TarArchiveEntry(file, file.getName());
                             tarArchiveOutputStream.putArchiveEntry(tarArchiveEntry);
                             if (file.isDirectory()) {
                                 continue;

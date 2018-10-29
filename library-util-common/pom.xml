@@ -5,12 +5,12 @@
     <parent>
         <artifactId>library-utils</artifactId>
         <groupId>com.github.duanxinyuan</groupId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>library-util-common</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <dependencies>
