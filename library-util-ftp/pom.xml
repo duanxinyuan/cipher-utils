@@ -5,7 +5,7 @@
     <parent>
         <artifactId>library-utils</artifactId>
         <groupId>com.github.duanxinyuan</groupId>
-        <version>1.0.2</version>
+        <version>1.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -23,6 +23,7 @@
         <dependency>
             <groupId>com.github.duanxinyuan</groupId>
             <artifactId>library-util-common</artifactId>
+            <version>1.1.2</version>
         </dependency>
     </dependencies>
 </project>

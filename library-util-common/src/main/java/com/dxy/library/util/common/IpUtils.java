@@ -1,9 +1,7 @@
 package com.dxy.library.util.common;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.net.*;
 import java.util.Enumeration;
 
 /**
@@ -48,44 +46,30 @@ public class IpUtils {
         return ip;
     }
 
-
     /**
-     * 获取本机的网络IP
+     * 获取本机IP
      */
-    public static String getLocalNetWorkIp() {
-        if (localIp != null) {
-            return localIp;
-        }
+    public static String getLocalIp() {
         try {
-            Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-            InetAddress ip = null;
-            while (netInterfaces.hasMoreElements()) {// 遍历所有的网卡
-                NetworkInterface ni = netInterfaces.nextElement();
-                if (ni.isLoopback() || ni.isVirtual()) {// 如果是回环和虚拟网络地址的话继续
-                    continue;
-                }
-                Enumeration<InetAddress> addresss = ni.getInetAddresses();
-                while (addresss.hasMoreElements()) {
-                    InetAddress address = addresss.nextElement();
-                    if (address instanceof Inet4Address) {// 这里暂时只获取ipv4地址
-                        ip = address;
-                        break;
+            for (Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces(); enumeration.hasMoreElements(); ) {
+                //遍历所有的网卡
+                NetworkInterface item = enumeration.nextElement();
+                for (InterfaceAddress address : item.getInterfaceAddresses()) {
+                    if (item.isLoopback() || !item.isUp()) {
+                        // 如果是回环和虚拟网络地址的话继续
+                        continue;
+                    }
+                    if (address.getAddress() instanceof Inet4Address) {
+                        Inet4Address inet4Address = (Inet4Address) address.getAddress();
+                        //只获取ipv4地址
+                        return inet4Address.getHostAddress();
                     }
                 }
-                if (ip != null) {
-                    break;
-                }
             }
-            if (ip != null) {
-                localIp = ip.getHostAddress();
-            } else {
-                localIp = "127.0.0.1";
-            }
-        } catch (Exception e) {
-            localIp = "127.0.0.1";
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (SocketException | UnknownHostException e) {
+            return "127.0.0.1";
         }
-        return localIp;
     }
-
 
 }
