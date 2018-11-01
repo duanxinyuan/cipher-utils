@@ -1,93 +1,93 @@
 package com.dxy.library.util.common;
 
-import com.dxy.library.json.gson.GsonUtil;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang3.time.DateFormatUtils;
+import com.dxy.library.json.gson.GsonUtil;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+/**
+ * 时间工具类
+ * @author duanxinyuan
+ * 2017/9/6 17:55
+ */
 public interface DateUtils {
+    String yyyy_MM_dd_HHmmss_VALUE = "yyyy-MM-dd HH:mm:ss";
+    DateTimeFormatter yyyy_MM_dd_HHmmss = DateTimeFormatter.ofPattern(yyyy_MM_dd_HHmmss_VALUE);
 
-    /**
-     * 服务器的时间格式
-     */
-    String FORMAT_YEAR_SECOND = "yyyy-MM-dd HH:mm:ss";
-    /**
-     * 年到分的时间格式
-     */
-    String FORMAT_YEAR_MINUTE = "yyyy-MM-dd HH:mm";
-    /**
-     * 年到天的时间格式
-     */
-    String FORMAT_YEAR_DAY = "yyyy-MM-dd";
-    /**
-     * 月到天的时间格式
-     */
-    String FORMAT_MONTH_DAY = "MM-dd";
-    /**
-     * 月到分的时间格式
-     */
-    String FORMAT_MONTH_MINUTE = "MM-dd HH:mm";
-    /**
-     * 时到分的时间格式
-     */
-    String FORMAT_HOUR_MINUTE = "HH:mm";
-    /**
-     * 时到秒的时间格式
-     */
-    String FORMAT_HOUR_SECOND = "HH:mm:ss";
-    /**
-     * 小时的时间格式
-     */
-    String FORMAT_HOUR = "HH";
+    String yyyy_MM_dd_HHmm_VALUE = "yyyy-MM-dd HH:mm";
+    DateTimeFormatter yyyy_MM_dd_HHmm = DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmm_VALUE");
 
-    /**
-     * Date转换成String
-     */
-    static String getFormat(Date date, String parseFormat) {
-        if (null == date) {
-            return "";
-        }
-        return DateFormatUtils.format(date, parseFormat);
-    }
+    String yyyyMMdd_VALUE = "yyyyMMdd";
+    DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern(yyyyMMdd_VALUE);
 
-    /**
-     * String解析成Date
-     * @return Date
-     */
-    static Date getParse(String str, String parseFormat) {
-        try {
-            return new SimpleDateFormat(parseFormat, Locale.getDefault()).parse(str);
-        } catch (ParseException e) {
-            e.printStackTrace();
+    String MM_dd_VALUE = "MM-dd";
+    DateTimeFormatter MM_dd = DateTimeFormatter.ofPattern(MM_dd_VALUE);
+
+    String MM_dd_HHmm_VALUE = "MM-dd HH:mm";
+    DateTimeFormatter MM_dd_HHmm = DateTimeFormatter.ofPattern("MM-dd HH:mm");
+
+    String HHmm_VALUE = "HH:mm";
+    DateTimeFormatter HHmm = DateTimeFormatter.ofPattern("HH:mm");
+
+    String HHmmss_VALUE = "HH:mm:ss";
+    DateTimeFormatter HHmmss = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    static String format(LocalDateTime localDateTime, String pattern) {
+        if (null == localDateTime) {
             return null;
         }
+        return localDateTime.format(DateTimeFormatter.ofPattern(pattern));
     }
 
-    /**
-     * 转换时间字符串
-     * @return String
-     */
-    static String getParseFormat(String date, String parseFormat) {
-        if (StringUtils.isEmpty(date)) {
-            return "";
-        }
-        return DateFormatUtils.format(getParse(date, parseFormat), parseFormat);
-    }
-
-    /**
-     * 转换时间字符串
-     * @return String
-     */
-    static Date getParseFormat(Date date, String parseFormat) {
+    static String format(Date date, String pattern) {
         if (null == date) {
             return null;
         }
-        return getParse(DateFormatUtils.format(date, parseFormat), parseFormat);
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    static String format(Date date, DateTimeFormatter dateTimeFormatter) {
+        if (null == date) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).format(dateTimeFormatter);
+    }
+
+    static String format(Long timestamp, String pattern) {
+        if (null == timestamp) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    static String format(Long timestamp, DateTimeFormatter dateTimeFormatter) {
+        if (null == timestamp) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()).format(dateTimeFormatter);
+    }
+
+    static Date parse(String str, String pattern) {
+        if (StringUtils.isEmail(str)) {
+            return null;
+        }
+        return Date.from(ZonedDateTime.parse(str, DateTimeFormatter.ofPattern(pattern)).toInstant());
+    }
+
+    static Date parse(String str, DateTimeFormatter dateTimeFormatter) {
+        if (StringUtils.isEmail(str)) {
+            return null;
+        }
+        return Date.from(ZonedDateTime.parse(str, dateTimeFormatter).toInstant());
+    }
+
+    static Date from(Long timestamp) {
+        if (null == timestamp) {
+            return null;
+        }
+        return Date.from(Instant.ofEpochMilli(timestamp));
     }
 
     /**
@@ -96,9 +96,8 @@ public interface DateUtils {
     static OffsetDateTime getUTCTime() {
         ZoneOffset zoneOffset = ZoneOffset.of("+00:00");
         LocalDateTime localDateTime = LocalDateTime.now(zoneOffset);
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DateUtils.FORMAT_YEAR_SECOND);
-        String formatter = dateTimeFormatter.format(localDateTime);
-        LocalDateTime localDateTime1 = LocalDateTime.parse(formatter, dateTimeFormatter);
+        String formatter = yyyy_MM_dd_HHmmss.format(localDateTime);
+        LocalDateTime localDateTime1 = LocalDateTime.parse(formatter, yyyy_MM_dd_HHmmss);
         return OffsetDateTime.of(localDateTime1, ZoneOffset.UTC);
     }
 
@@ -109,8 +108,8 @@ public interface DateUtils {
      * @return 小时数
      */
     static double getHourGap(String beginDateStr, String endDateStr, String parseFormat) {
-        Date beginDate = getParse(beginDateStr, parseFormat);
-        Date endDate = getParse(endDateStr, parseFormat);
+        Date beginDate = parse(beginDateStr, parseFormat);
+        Date endDate = parse(endDateStr, parseFormat);
         return getHourGap(beginDate, endDate);
     }
 
@@ -159,14 +158,14 @@ public interface DateUtils {
      * 给时间添加小时数
      */
     static String addHours(String dateStr, double value, String parseFormat) {
-        Date parse = getParse(dateStr, parseFormat);
+        Date parse = parse(dateStr, parseFormat);
         if (null == parse) {
             return null;
         }
         Calendar ca = Calendar.getInstance();
         ca.setTime(parse);
         ca.add(Calendar.SECOND, (int) (value * 3600));//以秒为单位计算
-        return getFormat(ca.getTime(), parseFormat);
+        return format(ca.getTime(), parseFormat);
     }
 
     /**
@@ -205,8 +204,7 @@ public interface DateUtils {
      * 获取工作日列表
      */
     static List<Date> getHoliday() {
-        String holidayStr = "[2017-01-01,2017-01-02,2017-01-27,2017-01-28,2017-01-29,2017-01-30,2017-01-31,2017-02-01,2017-02-02,2017-04-02,2017-04-03,2017-04-04,2017-04-04 ,2017-05-01,2017-05-28,2017-05-29,2017-05-30,2017-10-01 ,2017-10-02 ,2017-10-03 ,2017-10-04 ,2017-10-05 ,2017-10-06 ,2017-10-07 ,2017-10-08," +
-                "2018-01-01,2018-02-15,2018-02-16,2018-02-17,2018-02-18,2018-02-19,2018-02-20,2018-02-21,2018-04-05,2018-04-06,2018-04-07,2018-04-29,2018-04-30,2018-05-01,2018-06-18,2018-09-24,2018-10-01 ,2018-10-02 ,2018-10-03 ,2018-10-04 ,2018-10-05 ,2018-10-06 ,2018-10-07," +
+        String holidayStr = "[2018-01-01,2018-02-15,2018-02-16,2018-02-17,2018-02-18,2018-02-19,2018-02-20,2018-02-21,2018-04-05,2018-04-06,2018-04-07,2018-04-29,2018-04-30,2018-05-01,2018-06-18,2018-09-24,2018-10-01 ,2018-10-02 ,2018-10-03 ,2018-10-04 ,2018-10-05 ,2018-10-06 ,2018-10-07," +
                 "2019-01-01,2019-02-04,2019-02-05,2019-02-06,2019-02-07,2019-02-08,2019-02-09,2019-02-10,2019-04-05,2019-04-30,2019-05-01,2019-06-07,2019-09-13,2019-10-01 ,2019-10-02 ,2019-10-03 ,2019-10-04 ,2019-10-05 ,2019-10-06 ,2019-10-07]";
         return GsonUtil.from(holidayStr, new TypeToken<ArrayList<Date>>() {});
     }
@@ -257,7 +255,7 @@ public interface DateUtils {
      * 比较两个时间是否为同一天
      */
     static boolean isSameDate(String dateStr1, String dateStr2) {
-        return isSameDate(getParse(dateStr1, FORMAT_YEAR_DAY), getParse(dateStr2, FORMAT_YEAR_DAY));
+        return isSameDate(parse(dateStr1, yyyyMMdd), parse(dateStr2, yyyyMMdd));
     }
 
     /**
