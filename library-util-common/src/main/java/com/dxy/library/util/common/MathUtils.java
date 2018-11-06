@@ -1,6 +1,5 @@
 package com.dxy.library.util.common;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.math.BigDecimal;
@@ -13,9 +12,6 @@ import java.util.Random;
  * 2016/6/14 14:44
  */
 public interface MathUtils {
-
-    //除法运算的默认精度
-    int DEF_DIV_SCALE = 10;
 
     /**
      * 判断Integer是否不为空和0
@@ -188,6 +184,20 @@ public interface MathUtils {
      * 乘法运算
      * @param v1 被乘数
      * @param v2 乘数
+     * @param scale 表示表示需要精确到小数点以后几位。
+     * @return 两个参数的积
+     */
+    static double multiply(Number v1, Number v2, int scale) {
+        if (null == v1 || null == v2) {
+            return 0;
+        }
+        return round(new BigDecimal(String.valueOf(v1)).multiply(new BigDecimal(String.valueOf(v2))).doubleValue(), scale);
+    }
+
+    /**
+     * 乘法运算
+     * @param v1 被乘数
+     * @param v2 乘数
      * @return 两个参数的积
      */
     static double multiply(Number v1, Number... v2) {
@@ -202,13 +212,30 @@ public interface MathUtils {
     }
 
     /**
+     * 乘法运算
+     * @param v1 被乘数
+     * @param v2 乘数
+     * @return 两个参数的积
+     */
+    static double multiply(Number v1, int scale, Number... v2) {
+        v1 = v1 == null ? 0 : v1;
+        BigDecimal bigDecimal = new BigDecimal(String.valueOf(v1));
+        for (Number number : v2) {
+            if (number != null) {
+                bigDecimal = bigDecimal.multiply(new BigDecimal(String.valueOf(number)));
+            }
+        }
+        return round(bigDecimal.doubleValue(), scale);
+    }
+
+    /**
      * 除法运算
      * @param v1 被除数
      * @param v2 除数
      * @return 两个参数的商
      */
     static double divide(Number v1, Number v2) {
-        return divide(v1, v2, DEF_DIV_SCALE);
+        return divide(v1, v2, 2);
     }
 
     /**
@@ -222,7 +249,7 @@ public interface MathUtils {
         BigDecimal bigDecimal = new BigDecimal(String.valueOf(v1));
         for (Number number : v2) {
             if (number != null) {
-                bigDecimal = bigDecimal.divide(new BigDecimal(String.valueOf(number)), DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP);
+                bigDecimal = bigDecimal.divide(new BigDecimal(String.valueOf(number)), BigDecimal.ROUND_HALF_UP);
             }
         }
         return round(bigDecimal.doubleValue());
@@ -242,7 +269,7 @@ public interface MathUtils {
         if (scale < 0) {
             throw new IllegalArgumentException("保留小数位数不能小于0");
         }
-        return round(new BigDecimal(String.valueOf(v1)).divide(new BigDecimal(String.valueOf(v2)), scale, BigDecimal.ROUND_HALF_UP).doubleValue());
+        return new BigDecimal(String.valueOf(v1)).divide(new BigDecimal(String.valueOf(v2)), scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
@@ -279,7 +306,7 @@ public interface MathUtils {
      * @return 四舍五入后的结果
      */
     static double round(String v, int scale) {
-        if (org.apache.commons.lang3.StringUtils.isEmpty(v)) {
+        if (StringUtils.isEmpty(v)) {
             return 0;
         }
         if (scale < 0) {
