@@ -1,10 +1,10 @@
 package com.dxy.library.util.common.config;
 
 
-import com.dxy.library.util.common.ClassUtils;
-import com.dxy.library.util.common.StringUtils;
 import com.dxy.library.json.gson.GsonUtil;
 import com.dxy.library.json.jackson.JacksonUtil;
+import com.dxy.library.util.common.ClassUtils;
+import com.dxy.library.util.common.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 配置文件工具类
  * @author duanxinyuan
  * 2018/8/6 12:44
  */

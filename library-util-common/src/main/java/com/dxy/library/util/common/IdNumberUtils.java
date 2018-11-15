@@ -24,7 +24,7 @@ public class IdNumberUtils {
     /**
      * 香港地域编码值
      **/
-    public static final int HONGKONG_AREACODE = 810000;                                                                                                                                                 // 香港地域编码值
+    public static final int HONGKONG_AREACODE = 810000;
     /**
      * 台湾地域编码值
      **/
@@ -57,6 +57,13 @@ public class IdNumberUtils {
     };
 
     /**
+     * 检测是否是身份证号
+     */
+    public static boolean isIdNumber(String idNumber) {
+        return IdNumberUtils.strongVerifyIdNumber(idNumber);
+    }
+
+    /**
      * <p>
      * 身份证格式强校验
      * </p>
@@ -68,7 +75,7 @@ public class IdNumberUtils {
      * 8 4 2 （2）计算模 Y = mod(S, 11) （3）通过模得到对应的校验码 Y: 0 1 2 3 4 5 6 7 8 9 10 校验码: 1 0 X 9 8 7 6 5 4 3 2
      * </p>
      */
-    public static final boolean strongVerifyIdNumber(String idNumber) {
+    private static boolean strongVerifyIdNumber(String idNumber) {
         if (StringUtils.isBlank(idNumber)) {
             return false;
         }

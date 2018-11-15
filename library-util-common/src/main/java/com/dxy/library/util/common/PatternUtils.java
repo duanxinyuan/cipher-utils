@@ -1,6 +1,4 @@
-package com.dxy.library.util.common;/*
- * Copyright 2015-2020 uuzu.com All right reserved.
- */
+package com.dxy.library.util.common;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author zxc Jun 26, 2017 7:48:50 PM
+ * 正则表达式工具类
+ * @author duanxinyuan
+ * 2017/5/15 19:39
  */
 @Slf4j
 public class PatternUtils {
@@ -76,6 +76,53 @@ public class PatternUtils {
                 break;
         }
         return result;
+    }
+
+    /**
+     * 检测邮箱地址是否合法
+     */
+    public static boolean isEmail(String email) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.EMAIL, email);
+    }
+
+
+    /**
+     * 检测手机号是否合法
+     */
+    public static boolean isMobile(String mobile) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.MOBILE, mobile);
+    }
+
+    /**
+     * 判断字符串是否是中文
+     * @return true/false
+     */
+    public static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
+    }
+
+    /**
+     * 判断字符串中是否包含中文
+     * @return boolean
+     */
+    public static boolean isContainChinese(String str) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.CHINESE, str);
+    }
+
+    /**
+     * 判断一个字符串是否都为数字
+     */
+    public static boolean isDigit(String str) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.DIGIT, str);
+    }
+
+    /**
+     * 判断一个字符串是否含有数字
+     */
+    public static boolean hasDigit(String str) {
+        return PatternUtils.matches(PatternUtils.PatternEnum.DIGIT_CONTAINS, str);
     }
 
     /**

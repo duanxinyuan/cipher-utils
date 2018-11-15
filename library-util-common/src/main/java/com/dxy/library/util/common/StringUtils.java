@@ -15,28 +15,6 @@ import java.util.Random;
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     /**
-     * 检测邮箱地址是否合法
-     */
-    public static boolean isEmail(String email) {
-        return PatternUtils.matches(PatternUtils.PatternEnum.EMAIL, email);
-    }
-
-
-    /**
-     * 检测手机号是否合法
-     */
-    public static boolean isMobile(String mobile) {
-        return PatternUtils.matches(PatternUtils.PatternEnum.MOBILE, mobile);
-    }
-
-    /**
-     * 检测是否是身份证号
-     */
-    public static boolean isIdNumber(String idNumber) {
-        return IdNumberUtils.strongVerifyIdNumber(idNumber);
-    }
-
-    /**
      * 获取字符串长度（一个中文表示两个字符）
      */
     public static int getWordCount(String s) {
@@ -52,38 +30,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      */
     public static boolean isHttpUrl(String url) {
         return !StringUtils.isEmpty(url) && (url.startsWith("http://") || url.startsWith("https://"));
-    }
-
-    /**
-     * 判断字符串是否存在中文
-     * @return true/false
-     */
-    public static boolean isChinese(char c) {
-        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
-        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
-                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
-    }
-
-    /**
-     * 判断字符串中是否包含中文
-     * @return boolean
-     */
-    public static boolean isContainChinese(String str) {
-        return PatternUtils.matches(PatternUtils.PatternEnum.CHINESE, str);
-    }
-
-    /**
-     * 判断一个字符串是否都为数字
-     */
-    public static boolean isDigit(String str) {
-        return PatternUtils.matches(PatternUtils.PatternEnum.DIGIT, str);
-    }
-
-    /**
-     * 判断一个字符串是否含有数字
-     */
-    public static boolean hasDigit(String str) {
-        return PatternUtils.matches(PatternUtils.PatternEnum.DIGIT_CONTAINS, str);
     }
 
     /**
