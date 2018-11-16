@@ -99,10 +99,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param endDateStr 结束时间
      * @return 小时数
      */
-    public static double getHourGap(String beginDateStr, String endDateStr, String parseFormat) {
-        Date beginDate = parse(beginDateStr, parseFormat);
-        Date endDate = parse(endDateStr, parseFormat);
-        return getHourGap(beginDate, endDate);
+    public static double hourDifference(String beginDateStr, String endDateStr, String pattern) {
+        Date beginDate = parse(beginDateStr, pattern);
+        Date endDate = parse(endDateStr, pattern);
+        return hourDifference(beginDate, endDate);
     }
 
     /**
@@ -111,9 +111,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param endDate 结束时间
      * @return 小时数
      */
-    public static double getHourGap(Date beginDate, Date endDate) {
+    public static double hourDifference(Date beginDate, Date endDate) {
         if (null == beginDate || null == endDate) {
-            return 0;
+            throw new IllegalArgumentException("date is null");
         }
         long nh = 1000 * 60 * 60;
         // 获得两个时间的毫秒时间差异
@@ -123,11 +123,37 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
+     * 计算两个时间相差的天数目(向下取整)
+     * @param beginDateStr 开始时间
+     * @param endDateStr 结束时间
+     * @return 天数
+     */
+    public static int dayDifference(String beginDateStr, String endDateStr, String pattern) {
+        Date beginDate = parse(beginDateStr, pattern);
+        Date endDate = parse(endDateStr, pattern);
+        return dayDifference(beginDate, endDate);
+    }
+
+    /**
+     * 计算两个时间相差的天数目(向下取整)
+     * @param beginDate 开始时间
+     * @param endDate 结束时间
+     * @return 天数
+     */
+    public static int dayDifference(Date beginDate, Date endDate) {
+        long nh = 1000 * 60 * 60 * 24;
+        // 获得两个时间的毫秒时间差异
+        long diff = endDate.getTime() - beginDate.getTime();
+        // 计算差多少小时
+        return (int) (diff / nh);
+    }
+
+    /**
      * 获取离当前时间的时差
      * @param date 开始时间
      */
-    public static Duration duration(Date date) {
-        return duration(date, null);
+    public static Duration durationToNow(Date date) {
+        return Duration.between(ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()), ZonedDateTime.now());
     }
 
     /**
@@ -139,7 +165,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         GregorianCalendar beginCalendar = new GregorianCalendar();
         beginCalendar.setTime(beginDate);
         if (null == endDate) {
-            return Duration.between(beginCalendar.toZonedDateTime(), ZonedDateTime.now());
+            throw new IllegalArgumentException("enddate is null");
         }
         GregorianCalendar endCalendar = new GregorianCalendar();
         endCalendar.setTime(endDate);
@@ -149,27 +175,51 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 给时间添加小时数
      */
-    public static String addHours(String dateStr, double value, String parseFormat) {
-        Date parse = parse(dateStr, parseFormat);
-        if (null == parse) {
-            return null;
-        }
+    public static String addHours(String dateStr, double hours, String pattern) {
+        Date parse = parse(dateStr, pattern);
         Calendar ca = Calendar.getInstance();
         ca.setTime(parse);
-        ca.add(Calendar.SECOND, (int) (value * 3600));//以秒为单位计算
-        return format(ca.getTime(), parseFormat);
+        ca.add(Calendar.SECOND, (int) (hours * 3600));
+        return format(ca.getTime(), pattern);
     }
 
     /**
      * 给时间添加小时数
      */
-    public static Date addHours(Date date, double value) {
+    public static Date addHours(Date date, double hours) {
         if (null == date) {
-            return null;
+            throw new IllegalArgumentException("date is null");
         }
         Calendar ca = Calendar.getInstance();
         ca.setTime(date);
-        ca.add(Calendar.SECOND, (int) (value * 3600));//以秒为单位计算
+        ca.add(Calendar.SECOND, (int) (hours * 3600));
+        return ca.getTime();
+    }
+
+    /**
+     * 给时间添加天数
+     */
+    public static String addDays(String dateStr, int days, String pattern) {
+        if (StringUtils.isEmpty(dateStr)) {
+            throw new IllegalArgumentException("date is null");
+        }
+        Date parse = parse(dateStr, pattern);
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(parse);
+        ca.add(Calendar.DAY_OF_MONTH, days);
+        return format(ca.getTime(), pattern);
+    }
+
+    /**
+     * 给时间添加天数
+     */
+    public static Date addDays(Date date, int days) {
+        if (null == date) {
+            throw new IllegalArgumentException("date is null");
+        }
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(date);
+        ca.add(Calendar.DAY_OF_MONTH, days);
         return ca.getTime();
     }
 
