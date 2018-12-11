@@ -7,7 +7,7 @@ import lombok.Data;
  * 2018/9/14 18:14
  */
 @Data
-public class Config {
+public class Config<T> {
 
     public static final String DEFAULT_NAME = "config_default_name";
 
@@ -15,9 +15,9 @@ public class Config {
 
     private String name;
 
-    private Object value;
+    private T value;
 
-    public Config(String key, String name, Object value) {
+    public Config(String key, String name, T value) {
         this.key = key;
         this.name = name;
         this.value = value;

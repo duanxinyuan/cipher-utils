@@ -1,21 +1,20 @@
 package com.dxy.library.util.common.config;
 
 
-import com.dxy.library.json.gson.GsonUtil;
-import com.dxy.library.json.jackson.JacksonUtil;
-import com.dxy.library.util.common.ClassUtils;
-import com.dxy.library.util.common.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
+import com.dxy.library.json.gson.GsonUtil;
+import com.dxy.library.json.jackson.JacksonUtil;
+import com.dxy.library.util.common.ClassUtils;
+import com.dxy.library.util.common.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 配置文件工具类
  * @author duanxinyuan
  * 2018/8/6 12:44
  */
@@ -31,10 +30,12 @@ public class ConfigUtils {
         }
         HashMap<String, Object> yml = JacksonUtil.fromYamlRecource("application.yml", new TypeReference<HashMap<String, Object>>() {});
         if (yml != null && yml.size() > 0) {
+            yml = recursion(yml);
             properties.putAll(yml);
         }
         HashMap<String, Object> yaml = JacksonUtil.fromYamlRecource("application.yaml", new TypeReference<HashMap<String, Object>>() {});
         if (yaml != null && yaml.size() > 0) {
+            yaml = recursion(yaml);
             properties.putAll(yaml);
         }
     }
@@ -83,7 +84,11 @@ public class ConfigUtils {
      */
     public static <T> T getConfig(String key, Class<T> cls) {
         String value = getConfig(key);
-        return GsonUtil.fromLenient(value, cls);
+        if (StringUtils.isNotEmpty(value)) {
+            return GsonUtil.fromLenient(value, cls);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -106,21 +111,37 @@ public class ConfigUtils {
      * 获取配置（以Key为前缀，获取所有符合规则的config）
      * @param key 配置名称
      */
-    public static List<Config> getConfigs(String key) {
+    public static List<Config<String>> getConfigs(String key) {
+        return getConfigs(key, String.class);
+    }
+
+    /**
+     * 获取配置（以Key为前缀，获取所有符合规则的config）
+     * @param key 配置名称
+     */
+    public static <T> List<Config<T>> getConfigs(String key, Class<T> cls) {
         if (org.apache.commons.lang3.StringUtils.isEmpty(key)) {
             return Lists.newArrayList();
         }
-        List<Config> configs = Lists.newArrayList();
+        List<Config<T>> configs = Lists.newArrayList();
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             String entryKey = entry.getKey();
             Object entryValue = entry.getValue();
 
+            String name = null;
             if (entryKey.equals(key)) {
-                String name = Config.DEFAULT_NAME;
-                configs.add(new Config(entryKey, name, entryValue));
+                name = Config.DEFAULT_NAME;
             } else if (entryKey.startsWith(key + ".")) {
-                String name = entry.getKey().replace(key + ".", "");
-                configs.add(new Config(entryKey, name, entryValue));
+                name = entry.getKey().replace(key + ".", "");
+            }
+            if (StringUtils.isNotEmpty(name)) {
+                T value;
+                if (cls == String.class) {
+                    value = (T) entryValue;
+                } else {
+                    value = GsonUtil.from(entryValue, cls);
+                }
+                configs.add(new Config<>(entryKey, name, value));
             }
         }
         return configs;
