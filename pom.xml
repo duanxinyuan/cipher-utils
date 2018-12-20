@@ -8,6 +8,7 @@
         <module>library-util-ftp</module>
         <module>library-util-cipher</module>
         <module>library-util-common</module>
+        <module>library-util-coordinate</module>
     </modules>
 
     <parent>
