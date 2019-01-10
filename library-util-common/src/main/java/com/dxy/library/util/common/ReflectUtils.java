@@ -3,7 +3,6 @@ package com.dxy.library.util.common;
 import com.dxy.library.json.gson.GsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -135,7 +134,7 @@ public class ReflectUtils {
             }
             Field field = getField(obj.getClass(), name);
             if (field == null) {
-                return executeGet(obj, name);
+                return invokeGet(obj, name);
             } else {
                 return field.get(obj);
             }
@@ -156,18 +155,22 @@ public class ReflectUtils {
         if (null != field) {
             try {
                 Class<?> type = field.getType();
-                if (type == Integer.class) {
-                    value = NumberUtils.toInt(String.valueOf(value));
-                } else if (type == Long.class) {
-                    value = NumberUtils.toLong(String.valueOf(value));
-                } else if (type == Double.class) {
-                    value = NumberUtils.toDouble(String.valueOf(value));
-                } else if (type == BigDecimal.class) {
-                    value = NumberUtils.toDouble(String.valueOf(value));
-                } else if (type == Float.class) {
-                    value = NumberUtils.toFloat(String.valueOf(value));
-                } else if (type == Boolean.class) {
+                if (type == Short.class && !(value instanceof Short)) {
+                    value = Short.parseShort(String.valueOf(value));
+                } else if (type == Integer.class && !(value instanceof Integer)) {
+                    value = Integer.parseInt(String.valueOf(value));
+                } else if (type == Long.class && !(value instanceof Long)) {
+                    value = Long.parseLong(String.valueOf(value));
+                } else if (type == Double.class && !(value instanceof Double)) {
+                    value = Double.parseDouble(String.valueOf(value));
+                } else if (type == BigDecimal.class && !(value instanceof BigDecimal)) {
+                    value = new BigDecimal(String.valueOf(value));
+                } else if (type == Float.class && !(value instanceof Float)) {
+                    value = Float.parseFloat(String.valueOf(value));
+                } else if (type == Boolean.class && !(value instanceof Boolean)) {
                     value = BooleanUtils.toBoolean(String.valueOf(value));
+                } else if (type == String.class && !(value instanceof String)) {
+                    value = String.valueOf(value);
                 }
                 field.set(obj, value);
             } catch (IllegalAccessException e) {
@@ -335,19 +338,36 @@ public class ReflectUtils {
     }
 
     /**
-     * 执行get方法
-     * @param propertyName 变量名
-     * @param obj 变量值
+     * 执行set方法
+     * @param obj 执行对象
+     * @param fieldName 属性
+     * @param value 值
      */
-    public static Object executeGet(Object obj, String propertyName) {
+    public static void invokeSet(Object obj, String fieldName, Object value) {
         try {
-            PropertyDescriptor pd = new PropertyDescriptor(propertyName, obj.getClass());
-            Method method = pd.getReadMethod();
+            Class<?>[] parameterTypes = new Class<?>[1];
+            parameterTypes[0] = obj.getClass().getDeclaredField(fieldName).getType();
+            String sb = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            Method method = obj.getClass().getMethod(sb, parameterTypes);
+            method.invoke(obj, value);
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * 执行get方法
+     * @param obj 执行对象
+     * @param fieldName 属性
+     */
+    public static Object invokeGet(Object obj, String fieldName) {
+        try {
+            String sb = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            Method method = obj.getClass().getMethod(sb);
             return method.invoke(obj);
-        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            log.error("execute get error, obj: {}. propertyName: {}", GsonUtil.to(obj), propertyName, e);
+        } catch (Exception ignored) {
             return null;
         }
     }
+
 
 }
