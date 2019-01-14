@@ -51,3 +51,5 @@
 * 邮件工具类：EmailUtils
 
 * FTP操作工具类：FtpUtils
+
+* Twitter雪花算法：SnowflakeId
