@@ -10,6 +10,7 @@ import java.util.Enumeration;
  * 2017/9/6 16:55
  */
 public class IpUtils {
+    private static String localIp;
 
     /**
      * 从请求头中获取用户IP
@@ -67,7 +68,7 @@ public class IpUtils {
             }
             return InetAddress.getLocalHost().getHostAddress();
         } catch (SocketException | UnknownHostException e) {
-            return "127.0.0.1";
+            throw new RuntimeException(e);
         }
     }
 

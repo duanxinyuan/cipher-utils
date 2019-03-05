@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 /**
  * FTP操作工具类
  * 需要依赖“Apache Commons Net”，<a href="http://mvnrepository.com/artifact/commons-net/commons-net/3.6">仓库地址
- * 在每次使用前必须先建立连接，并在每次使用完成之后关闭连接。</p>
+ * 在每次使用前必须先建立连接，并在每次使用完成之后关闭连接。
  * FtpUtil.connect("127.0.0.1", 21, "admin", "admin");
  * // 执行操作 ...
  * FtpUtil.disconnect();

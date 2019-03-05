@@ -1,4 +1,4 @@
-package com.dxy.library.util.email;
+package com.dxy.library.util.email.callback;
 
 /**
  * @author duanxinyuan

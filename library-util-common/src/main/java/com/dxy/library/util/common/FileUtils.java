@@ -1,7 +1,6 @@
 package com.dxy.library.util.common;
 
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -23,7 +22,6 @@ import java.util.List;
  * @author duanxinyuan
  * 2018/5/2 20:32
  */
-@Slf4j
 public class FileUtils {
 
     /**

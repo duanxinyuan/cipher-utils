@@ -10,11 +10,11 @@ public class ConfigTest {
 
     @Test
     public void test() {
-        System.out.println(ConfigUtils.getConfig("dxy.name"));
-        System.out.println(ConfigUtils.getConfig("dxy.age", Long.class));
-        System.out.println(ConfigUtils.getConfig("dxy.info.game", GameInfo.class));
+        System.out.println(ConfigUtils.getConfig("test.name"));
+        System.out.println(ConfigUtils.getConfig("test.age", Long.class));
+        System.out.println(ConfigUtils.getConfig("test.info.game", GameInfo.class));
 
-        System.out.println(GsonUtil.to(ConfigUtils.getConfigs("dxy.info.game")));
+        System.out.println(GsonUtil.to(ConfigUtils.getConfigs("test.info.game")));
     }
 
 }

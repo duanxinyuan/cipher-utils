@@ -69,8 +69,15 @@ public class SnowflakeId {
     /**
      * 生成雪花Id（18位）
      */
-    public static long generate() {
+    public static long getLong() {
         return idWorker.nextId();
     }
-    
+
+    /**
+     * 生成雪花Id（18位）
+     */
+    public static String getString() {
+        return String.valueOf(idWorker.nextId());
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.dxy.library.util.common;
 
-import com.dxy.library.json.gson.GsonUtil;
 import com.google.gson.reflect.TypeToken;
+import com.dxy.library.json.gson.GsonUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.text.ParseException;

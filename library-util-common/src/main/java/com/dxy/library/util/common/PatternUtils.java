@@ -1,7 +1,5 @@
 package com.dxy.library.util.common;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -12,7 +10,6 @@ import java.util.regex.Pattern;
  * @author duanxinyuan
  * 2017/5/15 19:39
  */
-@Slf4j
 public class PatternUtils {
     //邮箱地址
     private static Pattern COMPILE_EMAIL = Pattern.compile("\\w+@\\w+\\.(com|cn)");
@@ -23,7 +20,7 @@ public class PatternUtils {
     //手机号
     private static Pattern COMPILE_MOBILE = Pattern.compile("^[1][0-9]{10}$");
     //数字
-    private static Pattern COMPILE_DIGIT = Pattern.compile("[0-9]{1,}");
+    private static Pattern COMPILE_DIGIT = Pattern.compile("[0-9]*$");
     //包含数字的字符串
     private static Pattern COMPILE_DIGIT_CONTAINS = Pattern.compile(".*\\d+.*");
     //中文
@@ -31,7 +28,7 @@ public class PatternUtils {
     //URI
     private static Pattern COMPILE_URI = Pattern.compile("(/[A-Za-z0-9_]+(/[A-Za-z0-9_]+)+)");
     //URL
-    private static Pattern COMPILE_URL = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\?&%=,;\\[\\]\\{\\}`~!@#\\$\\^\\*\\(\\)_\\+\\\\\\|]+");
+    private static Pattern COMPILE_URL = Pattern.compile("(http://|https://)[\\w.\\-/:?&%=,;\\[\\]{}`~!@#$^*()_+\\\\|]+");
     //特殊字符串
     private static Pattern COMPILE_STRING_SPECIAL = Pattern.compile(".*[^A-Za-z0-9]$");
 

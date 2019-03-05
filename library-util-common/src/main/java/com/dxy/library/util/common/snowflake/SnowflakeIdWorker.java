@@ -147,4 +147,5 @@ class SnowflakeIdWorker {
     private long timeGen() {
         return System.currentTimeMillis();
     }
+
 }

@@ -10,7 +10,7 @@ import java.util.Date;
 public class DateUtilsTest {
 
     @Test
-    public void test(){
+    public void test() {
         System.out.println(DateUtils.format(new Date(), DateUtils.yyyy_MM_dd_HHmmss));
         System.out.println(DateUtils.format(new Date(), DateUtils.yyyy_MM_dd_HHmm));
         System.out.println(DateUtils.format(new Date(), DateUtils.yyyyMMdd));

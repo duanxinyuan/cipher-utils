@@ -1,17 +1,16 @@
 package com.dxy.library.util.common;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 系统工具类
  * @author duanxinyuan
  * 2018/8/1 15:53
  */
-@Slf4j
 public class SystemUtils {
     private static String WINDOWS = "Windows";
     private static String MAC = "Mac";
@@ -57,27 +56,16 @@ public class SystemUtils {
         executor.setWatchdog(watchdog);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream, errorStream);
+        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
 
         executor.setStreamHandler(streamHandler);
         try {
             executor.execute(cmdLine);
             //获取程序外部程序执行结果
-            String out = outputStream.toString("utf-8");
-            String error = errorStream.toString("utf-8");
-            if (StringUtils.isNotEmpty(out)) {
-                log.info("CommandExecutorResult " + out);
-            }
-            if (StringUtils.isNotEmpty(error)) {
-                log.error("CommandExecutorError " + error);
-            }
-            return out;
+            return outputStream.toString(StandardCharsets.UTF_8.name());
         } catch (IOException e) {
-            e.printStackTrace();
-            log.error("系统命令执行失败", e);
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**
@@ -100,8 +88,7 @@ public class SystemUtils {
             //命令执行返回前一直阻塞
             handler.waitFor();
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            log.error("系统命令执行失败", e);
+            throw new RuntimeException(e);
         }
     }
 }

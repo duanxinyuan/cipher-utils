@@ -8,9 +8,9 @@ import org.junit.Test;
 public class SnowflakeIdTest {
 
     @Test
-    public void testSnowflakeId() {
+    public void testSnowflakeId(){
         for (int i = 0; i < 100000; i++) {
-            System.out.println(SnowflakeId.generate());
+            System.out.println(SnowflakeId.getString());
         }
     }
 

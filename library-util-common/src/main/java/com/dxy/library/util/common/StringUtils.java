@@ -85,7 +85,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
      * 将16进制转换为二进制
      */
     public static byte[] parseHexToBytes(String hexStr) {
-        if (hexStr.length() < 1) {
+        if (StringUtils.isEmpty(hexStr)) {
             return null;
         }
         byte[] result = new byte[hexStr.length() / 2];
@@ -117,13 +117,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
         for (int i = 0; i < objects.size(); i++) {
             Object o = objects.get(i);
-            if (null == o) {
-                continue;
-            }
-            stringBuilder.append(o);
-            if (i != objects.size() - 1) {
-                stringBuilder.append(separator);
-            }
+            join(separator, stringBuilder, i, o, objects.size());
         }
         return stringBuilder.toString();
     }
@@ -139,15 +133,19 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
             T t = list.get(i);
-            if (null == t) {
-                continue;
-            }
-            stringBuilder.append(t);
-            if (i != list.size() - 1) {
-                stringBuilder.append(separator);
-            }
+            join(separator, stringBuilder, i, t, list.size());
         }
         return stringBuilder.toString();
+    }
+
+    private static <T> void join(String separator, StringBuilder stringBuilder, int i, T t, int size) {
+        if (null == t) {
+            return;
+        }
+        stringBuilder.append(t);
+        if (i != size - 1) {
+            stringBuilder.append(separator);
+        }
     }
 
     /**

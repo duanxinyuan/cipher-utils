@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 读取配置文件的工具类
  * @author duanxinyuan
  * 2018/8/6 12:44
  */
@@ -47,7 +48,7 @@ public class ConfigUtils {
         HashMap<String, Object> result = new HashMap<>();
         List<String> removeKeys = Lists.newArrayList();
         prop.forEach((k, v) -> {
-            if (ClassUtils.isAssignableFrom(v.getClass(), Map.class)) {
+            if (ClassUtils.isAssignable(v.getClass(), Map.class)) {
                 HashMap<String, Object> from = GsonUtil.from(GsonUtil.to(v), new TypeToken<HashMap<String, Object>>() {});
                 result.putAll(recursion(k, result, from));
                 if (!prop.containsKey(k)) {
@@ -67,7 +68,7 @@ public class ConfigUtils {
             Object value = entry.getValue();
             String newKey = StringUtils.isEmpty(key) ? previousKey : previousKey + "." + key;
 
-            boolean assignableFrom = ClassUtils.isAssignableFrom(value.getClass(), Map.class);
+            boolean assignableFrom = ClassUtils.isAssignable(value.getClass(), Map.class);
             if (assignableFrom) {
                 prop = GsonUtil.from(GsonUtil.to(value), new TypeToken<HashMap<String, Object>>() {});
                 result = recursion(newKey, result, prop);
@@ -82,12 +83,20 @@ public class ConfigUtils {
      * 获取配置
      * @param key 配置名称
      */
-    public static <T> T getConfig(String key, Class<T> cls) {
+    public static <T> T getConfig(String key, Class<T> type) {
+        return getConfig(key, type, null);
+    }
+
+    /**
+     * 获取配置
+     * @param key 配置名称
+     */
+    public static <T> T getConfig(String key, Class<T> type, T defaultValue) {
         String value = getConfig(key);
         if (StringUtils.isNotEmpty(value)) {
-            return GsonUtil.fromLenient(value, cls);
+            return GsonUtil.fromLenient(value, type);
         } else {
-            return null;
+            return defaultValue;
         }
     }
 
@@ -108,6 +117,22 @@ public class ConfigUtils {
     }
 
     /**
+     * 获取配置
+     * @param key 配置名称
+     */
+    public static String getConfig(String key, String defaultValue) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        Object object = properties.get(key);
+        if (object == null) {
+            return defaultValue;
+        } else {
+            return String.valueOf(object);
+        }
+    }
+
+    /**
      * 获取配置（以Key为前缀，获取所有符合规则的config）
      * @param key 配置名称
      */
@@ -119,7 +144,7 @@ public class ConfigUtils {
      * 获取配置（以Key为前缀，获取所有符合规则的config）
      * @param key 配置名称
      */
-    public static <T> List<Config<T>> getConfigs(String key, Class<T> cls) {
+    public static <T> List<Config<T>> getConfigs(String key, Class<T> type) {
         if (org.apache.commons.lang3.StringUtils.isEmpty(key)) {
             return Lists.newArrayList();
         }
@@ -136,10 +161,10 @@ public class ConfigUtils {
             }
             if (StringUtils.isNotEmpty(name)) {
                 T value;
-                if (cls == String.class) {
+                if (type == String.class) {
                     value = (T) entryValue;
                 } else {
-                    value = GsonUtil.from(entryValue, cls);
+                    value = GsonUtil.from(String.valueOf(entryValue), type);
                 }
                 configs.add(new Config<>(entryKey, name, value));
             }

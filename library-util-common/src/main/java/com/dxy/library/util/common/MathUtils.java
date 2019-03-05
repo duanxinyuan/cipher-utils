@@ -110,6 +110,40 @@ public interface MathUtils {
     }
 
     /**
+     * 比较大小
+     * @return 返回l1是否比l2大, l1>l2返回true,l1<l2返回false
+     */
+    static boolean isGT(Long l1, Long l2) {
+        return l1 != null && (l2 == null || l1 > l2);
+    }
+
+    /**
+     * 比较大小
+     * @return i1, l1>i2返回true,i1<i2返回false
+     */
+    static boolean isGT(Integer i1, Integer i2) {
+        return i1 != null && (i2 == null || i1 > i2);
+    }
+
+    /**
+     * 比较大小
+     * @return 返回b1是否比b2大, b1>b2返回true,b1<b2返回false
+     */
+    static boolean isGT(BigDecimal b1, BigDecimal b2) {
+        return b1 != null && b2 != null && b1.compareTo(b2) > 0;
+    }
+
+    /**
+     * 比较大小
+     * @return 返回b1是否比b2大, b1>b2返回true,b1<b2返回false
+     */
+    static boolean isGT(Double b1, Double b2) {
+        BigDecimal bigDecimal1 = new BigDecimal(String.valueOf(NumberUtils.toDouble(String.valueOf(b1))));
+        BigDecimal bigDecimal2 = new BigDecimal(String.valueOf(NumberUtils.toDouble(String.valueOf(b2))));
+        return isGT(bigDecimal1, bigDecimal2);
+    }
+
+    /**
      * 加法运算
      * @param v1 被加数
      * @param v2 加数
@@ -125,9 +159,30 @@ public interface MathUtils {
      * 加法运算
      * @param v1 被减数
      * @param v2 减数
-     * @return 两个参数的差
+     * @return 两个参数的和
      */
     static double add(Number v1, Number... v2) {
+        return round(addNoRound(v1, v2));
+    }
+
+    /**
+     * 加法运算
+     * @param v1 被减数
+     * @param v2 减数
+     * @param scale 保留的小数点位数
+     * @return 两个参数的和
+     */
+    static double add(Number v1, int scale, Number... v2) {
+        return round(addNoRound(v1, v2), scale);
+    }
+
+    /**
+     * 加法运算
+     * @param v1 被减数
+     * @param v2 减数
+     * @return 两个参数的和
+     */
+    static double addNoRound(Number v1, Number... v2) {
         v1 = v1 == null ? 0 : v1;
         BigDecimal bigDecimal = new BigDecimal(String.valueOf(v1));
         for (Number number : v2) {
@@ -135,7 +190,7 @@ public interface MathUtils {
                 bigDecimal = bigDecimal.add(new BigDecimal(String.valueOf(number)));
             }
         }
-        return round(bigDecimal.doubleValue());
+        return bigDecimal.doubleValue();
     }
 
     /**
@@ -157,6 +212,27 @@ public interface MathUtils {
      * @return 两个参数的差
      */
     static double subtract(Number v1, Number... v2) {
+        return round(subtractNoRound(v1, v2));
+    }
+
+    /**
+     * 减法运算
+     * @param v1 被减数
+     * @param v2 减数
+     * @param scale 保留的小数点位数
+     * @return 两个参数的差
+     */
+    static double subtract(Number v1, int scale, Number... v2) {
+        return round(subtractNoRound(v1, v2), scale);
+    }
+
+    /**
+     * 减法运算
+     * @param v1 被减数
+     * @param v2 减数
+     * @return 两个参数的差
+     */
+    static double subtractNoRound(Number v1, Number... v2) {
         v1 = v1 == null ? 0 : v1;
         BigDecimal bigDecimal = new BigDecimal(String.valueOf(v1));
         for (Number number : v2) {
@@ -164,7 +240,7 @@ public interface MathUtils {
                 bigDecimal = bigDecimal.subtract(new BigDecimal(String.valueOf(number)));
             }
         }
-        return round(bigDecimal.doubleValue());
+        return bigDecimal.doubleValue();
     }
 
     /**
@@ -184,7 +260,7 @@ public interface MathUtils {
      * 乘法运算
      * @param v1 被乘数
      * @param v2 乘数
-     * @param scale 表示表示需要精确到小数点以后几位。
+     * @param scale 保留的小数点位数
      * @return 两个参数的积
      */
     static double multiply(Number v1, Number v2, int scale) {
@@ -201,14 +277,19 @@ public interface MathUtils {
      * @return 两个参数的积
      */
     static double multiply(Number v1, Number... v2) {
-        v1 = v1 == null ? 0 : v1;
-        BigDecimal bigDecimal = new BigDecimal(String.valueOf(v1));
-        for (Number number : v2) {
-            if (number != null) {
-                bigDecimal = bigDecimal.multiply(new BigDecimal(String.valueOf(number)));
-            }
-        }
-        return round(bigDecimal.doubleValue());
+        return round(multiplyNoRound(v1, v2));
+    }
+
+    /**
+     * 乘法运算
+     * @param v1 被乘数
+     * @param v2 乘数
+     * @param scale 保留的小数点位数
+     * @return 两个参数的积
+     */
+    static double multiply(Number v1, int scale, Number... v2) {
+        double multiply = multiplyNoRound(v1, v2);
+        return multiply(multiply, scale);
     }
 
     /**
@@ -217,7 +298,7 @@ public interface MathUtils {
      * @param v2 乘数
      * @return 两个参数的积
      */
-    static double multiply(Number v1, int scale, Number... v2) {
+    static double multiplyNoRound(Number v1, Number... v2) {
         v1 = v1 == null ? 0 : v1;
         BigDecimal bigDecimal = new BigDecimal(String.valueOf(v1));
         for (Number number : v2) {
@@ -225,7 +306,7 @@ public interface MathUtils {
                 bigDecimal = bigDecimal.multiply(new BigDecimal(String.valueOf(number)));
             }
         }
-        return round(bigDecimal.doubleValue(), scale);
+        return bigDecimal.doubleValue();
     }
 
     /**
@@ -245,6 +326,27 @@ public interface MathUtils {
      * @return 两个参数的商
      */
     static double divide(Number v1, Number... v2) {
+        return round(divideNoRound(v1, v2));
+    }
+
+    /**
+     * 除法运算
+     * @param v1 被除数
+     * @param v2 除数
+     * @param scale 保留的小数点位数
+     * @return 两个参数的商
+     */
+    static double divide(Number v1, int scale, Number... v2) {
+        return round(divideNoRound(v1, v2), scale);
+    }
+
+    /**
+     * 除法运算
+     * @param v1 被除数
+     * @param v2 除数
+     * @return 两个参数的商
+     */
+    static double divideNoRound(Number v1, Number... v2) {
         v1 = v1 == null ? 0 : v1;
         BigDecimal bigDecimal = new BigDecimal(String.valueOf(v1));
         for (Number number : v2) {
@@ -252,14 +354,14 @@ public interface MathUtils {
                 bigDecimal = bigDecimal.divide(new BigDecimal(String.valueOf(number)), BigDecimal.ROUND_HALF_UP);
             }
         }
-        return round(bigDecimal.doubleValue());
+        return bigDecimal.doubleValue();
     }
 
     /**
      * 除法运算
      * @param v1 被除数
      * @param v2 除数
-     * @param scale 表示表示需要精确到小数点以后几位。
+     * @param scale 保留的小数点位数
      * @return 两个参数的商
      */
     static double divide(Number v1, Number v2, int scale) {
@@ -269,7 +371,9 @@ public interface MathUtils {
         if (scale < 0) {
             throw new IllegalArgumentException("保留小数位数不能小于0");
         }
-        return new BigDecimal(String.valueOf(v1)).divide(new BigDecimal(String.valueOf(v2)), scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+        BigDecimal bigDecimal1 = new BigDecimal(String.valueOf(v1));
+        BigDecimal bigDecimal2 = new BigDecimal(String.valueOf(v2));
+        return bigDecimal1.divide(bigDecimal2, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
@@ -332,38 +436,6 @@ public interface MathUtils {
      */
     static int roundInt(Number v) {
         return roundInt(String.valueOf(v));
-    }
-
-    /**
-     * 比较大小
-     * @return 返回l1是否比l2大, l1>l2返回true,l1<l2返回false
-     */
-    static boolean isGT(Long l1, Long l2) {
-        return (l1 != null || l2 != null) && l1 != null && (l2 == null || l1 > l2);
-    }
-
-    /**
-     * 比较大小
-     * @return i1, l1>i2返回true,i1<i2返回false
-     */
-    static boolean isGT(Integer i1, Integer i2) {
-        return (i1 != null || i2 != null) && i1 != null && (i2 == null || i1 > i2);
-    }
-
-    /**
-     * 比较大小
-     * @return 返回b1是否比b2大, b1>b2返回true,b1<b2返回false
-     */
-    static boolean isGT(BigDecimal b1, BigDecimal b2) {
-        return b1 != null && b2 != null && b1.compareTo(b2) > 0;
-    }
-
-    /**
-     * 比较大小
-     * @return 返回b1是否比b2大, b1>b2返回true,b1<b2返回false
-     */
-    static boolean isGT(Double b1, Double b2) {
-        return isGT(new BigDecimal(String.valueOf(NumberUtils.toDouble(String.valueOf(b1)))), new BigDecimal(String.valueOf(NumberUtils.toDouble(String.valueOf(b2)))));
     }
 
     /**

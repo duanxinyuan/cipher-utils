@@ -1,10 +1,12 @@
 package com.dxy.library.util.common;
 
-import com.google.common.collect.Maps;
-import org.apache.commons.lang3.math.NumberUtils;
+import com.google.common.collect.Sets;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * List工具类
@@ -145,172 +147,20 @@ public class ListUtils {
      * 从list中随机抽取n个元素
      */
     private static <V> List<V> getRandom(List<V> list, int n) {
-        HashMap<Integer, String> map = Maps.newHashMap();
-        List<V> listNew = new ArrayList<V>();
         if (list.size() <= n) {
             return list;
         } else {
-            while (map.size() < n) {
+            List<V> listNew = new ArrayList<>();
+            Set<Integer> set = Sets.newHashSet();
+            while (set.size() < n) {
                 int random = (int) (Math.random() * list.size());
-                if (!map.containsKey(random)) {
-                    map.put(random, "");
+                if (!set.contains(random)) {
+                    set.add(random);
                     listNew.add(list.get(random));
                 }
             }
             return listNew;
         }
     }
-
-    /***
-     *从List中根据权重随机获取count个数据
-     */
-    public static <T> List<T> getRandom(String[] keys, int[] weights, Integer count, List<T> ts, List<Long> excepts, String verifyKy) {
-        if (keys == null || weights == null || keys.length != weights.length) {
-            return ts;
-        }
-        List<WeightElement> weightElements = new ArrayList<>();
-
-        for (int i = 0; i < keys.length; i++) {
-            weightElements.add(new WeightElement(keys[i], weights[i]));
-        }
-
-        if (weightElements.size() == 0) {
-            return ts;
-        }
-
-        WeightElement ele0 = weightElements.get(0);
-        ele0.setThresholdLow(0);
-        ele0.setThresholdHigh(ele0.getWeight());
-
-        for (int i = 1; i < weightElements.size(); i++) {
-            WeightElement curElement = weightElements.get(i);
-            WeightElement preElement = weightElements.get(i - 1);
-
-            curElement.setThresholdLow(preElement.getThresholdHigh());
-            curElement.setThresholdHigh(curElement.getThresholdLow() + curElement.getWeight());
-        }
-
-        Random r = new Random();
-        Map<String, List<Integer>> map = new TreeMap<>();
-        //根据权重配比 得到随机数
-        for (int i = 0; i < count; i++) {
-
-            Integer thresholdHigh = weightElements.get(weightElements.size() - 1).getThresholdHigh();
-            if (thresholdHigh == 0) {
-                continue;
-            }
-            Integer rv = r.nextInt(thresholdHigh);
-
-            if (rv < 0 || rv > weightElements.get(weightElements.size() - 1).getThresholdHigh() - 1) {
-                return null;
-            }
-            WeightElement randomValue;
-            //此时rv必然在0 - getMaxRandomValue()-1范围内，
-            //也就是必然能够命中某一个值
-            int start = 0, end = weightElements.size() - 1;
-            int index = weightElements.size() / 2;
-            while (true) {
-                if (rv < weightElements.get(index).getThresholdLow()) {
-                    end = index - 1;
-                } else if (rv >= weightElements.get(index).getThresholdHigh()) {
-                    start = index + 1;
-                } else {
-                    randomValue = weightElements.get(index);
-                    break;
-                }
-                index = (start + end) / 2;
-            }
-            String key = randomValue == null ? "" : randomValue.getKey();
-            if (!map.containsKey(key)) {
-                map.put(key, new ArrayList<>());
-            }
-            T t = ts.get(rv);
-            Object fieldValue = ReflectUtils.getFieldValue(t, verifyKy);
-            if (map.get(key).contains(rv) || (t != null && excepts.contains(NumberUtils.toLong(String.valueOf(fieldValue))))) {
-                count++;
-                //防止死循环
-                if (count >= 200) {
-                    break;
-                }
-            } else {
-                map.get(key).add(rv);
-            }
-        }
-        List<Integer> indexs = new ArrayList<>();
-        List<T> result = new ArrayList<>();
-        map.forEach((k, v) -> indexs.addAll(v));
-        indexs.forEach(i -> result.add(ts.get(i)));
-        return result;
-    }
-
-    public static class WeightElement {
-        /**
-         * 元素标记
-         */
-        private String key;
-        /**
-         * 元素权重
-         */
-        private Integer weight;
-        /**
-         * 权重对应随机数范围低线
-         */
-        private Integer thresholdLow;
-        /**
-         * 权重对应随机数范围高线
-         */
-        private Integer thresholdHigh;
-
-        public WeightElement() {
-        }
-
-        public WeightElement(Integer weight) {
-            this.key = weight.toString();
-            this.weight = weight;
-        }
-
-        public WeightElement(String key, Integer weight) {
-            this.key = key;
-            this.weight = weight;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        public Integer getWeight() {
-            return weight;
-        }
-
-        public void setWeight(Integer weight) {
-            this.weight = weight;
-        }
-
-        public Integer getThresholdLow() {
-            return thresholdLow;
-        }
-
-        public void setThresholdLow(Integer thresholdLow) {
-            this.thresholdLow = thresholdLow;
-        }
-
-        public Integer getThresholdHigh() {
-            return thresholdHigh;
-        }
-
-        public void setThresholdHigh(Integer thresholdHigh) {
-            this.thresholdHigh = thresholdHigh;
-        }
-
-        @Override
-        public String toString() {
-            return "key:" + this.key + " weight:" + this.weight + " low:" + this.thresholdLow + " heigh:" + this.thresholdHigh;
-        }
-    }
-
 
 }
