@@ -38,8 +38,7 @@ public class MD5Utils {
             throw new RuntimeException("MD5 error", e);
         }
         // 使用指定的字节更新摘要
-        messageDigest.update(data);
-        return messageDigest.digest();
+        return messageDigest.digest(data);
     }
 
     /**
@@ -49,8 +48,7 @@ public class MD5Utils {
      * @return 密文（16进制）
      */
     public static String md5(String data, String salt) {
-        byte[] saltBytes = md5(salt.getBytes());
-        byte[] bytes = md5WithSalt(data.getBytes(), saltBytes, 1);
+        byte[] bytes = md5WithSalt(data.getBytes(), salt.getBytes(), 1);
         return StringUtils.toHex(bytes);
     }
 
@@ -62,8 +60,7 @@ public class MD5Utils {
      * @return 密文
      */
     public static byte[] md5(byte[] data, byte[] salt) {
-        byte[] saltBytes = md5(salt);
-        return md5WithSalt(data, saltBytes, 1);
+        return md5WithSalt(data, salt, 1);
     }
 
     /**
@@ -74,8 +71,7 @@ public class MD5Utils {
      * @return 密文（16进制）
      */
     public static String md5(String data, String salt, int hashCount) {
-        byte[] saltBytes = md5(salt.getBytes());
-        byte[] bytes = md5WithSalt(data.getBytes(), saltBytes, hashCount);
+        byte[] bytes = md5WithSalt(data.getBytes(), salt.getBytes(), hashCount);
         return StringUtils.toHex(bytes);
     }
 
@@ -88,8 +84,7 @@ public class MD5Utils {
      * @return 密文
      */
     public static byte[] md5(byte[] data, byte[] salt, int hashCount) {
-        byte[] saltBytes = md5(salt);
-        return md5WithSalt(data, saltBytes, hashCount);
+        return md5WithSalt(data, salt, hashCount);
     }
 
     /**
