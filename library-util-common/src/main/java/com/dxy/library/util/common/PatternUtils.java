@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class PatternUtils {
     //邮箱地址
-    private static Pattern COMPILE_EMAIL = Pattern.compile("\\w+@\\w+\\.(com|cn)");
+    private static Pattern COMPILE_EMAIL = Pattern.compile("([A-Za-z0-9_\\-.\\u4e00-\\u9fa5])+@([A-Za-z0-9_\\-.])+\\.([A-Za-z]{2,8})");
     //日期
     private static Pattern COMPILE_DATE = Pattern.compile("20\\d{2}-((0[1-9])|(1[0-2]))-((0[1-9])|([1-2][0-9])|(3[0-1]))");
     //IP
