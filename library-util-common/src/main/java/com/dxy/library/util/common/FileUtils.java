@@ -110,7 +110,7 @@ public class FileUtils {
                     for (String path : paths) {
                         File file = new File(path);
                         if (file.exists()) {
-                            String name = path.replace(dirPath, "").replace("\\", "/");
+                            String name = path.replace(dirPath, "").replace("\\", File.separator);
                             ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(file, name);
                             zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
                             if (file.isDirectory()) {
@@ -201,7 +201,7 @@ public class FileUtils {
                     String entryFilePath = saveFileDir + entryFileName;
                     // 把解压出来的文件写到指定路径
                     File entryFile = new File(entryFilePath);
-                    if (entryFileName.endsWith("/")) {
+                    if (entryFileName.endsWith(File.separator)) {
                         entryFile.mkdirs();
                     } else {
                         try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(entryFile))) {
@@ -253,7 +253,7 @@ public class FileUtils {
                     for (String path : paths) {
                         File file = new File(path);
                         if (file.exists()) {
-                            String name = path.replace(dirPath, "").replace("\\", "/");
+                            String name = path.replace(dirPath, "").replace("\\", File.separator);
                             TarArchiveEntry tarArchiveEntry = new TarArchiveEntry(file, name);
                             tarArchiveOutputStream.putArchiveEntry(tarArchiveEntry);
                             if (file.isDirectory()) {
@@ -343,7 +343,7 @@ public class FileUtils {
                     // 构造解压出来的文件存放路径
                     // 把解压出来的文件写到指定路径
                     File entryFile = new File(saveFileDir + entryFileName);
-                    if (entryFileName.endsWith("/")) {
+                    if (entryFileName.endsWith(File.separator)) {
                         entryFile.mkdirs();
                     } else {
                         try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(entryFile))) {
