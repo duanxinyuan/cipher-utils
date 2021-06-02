@@ -23,6 +23,7 @@
 <dependency>
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>util-cipher</artifactId>
+    <version>1.2.1</version>
 </dependency>
 ```
 
