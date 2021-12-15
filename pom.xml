@@ -65,7 +65,7 @@
         <commons-lang3.version>3.9</commons-lang3.version>
         <commons-codec.version>1.13</commons-codec.version>
 
-        <bcprov.version>1.64</bcprov.version>
+        <bcprov.version>1.67</bcprov.version>
 
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-scala-plugin.version>2.15.2</maven-scala-plugin.version>
